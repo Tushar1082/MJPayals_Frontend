@@ -7,6 +7,10 @@ import { Tooltip } from "react-tooltip";
 import AddCustomers from "../features/customers/components/AddCustomers";
 import BorrowingDashboard from "../features/borrowing/components/BorrowingDashboard";
 import Diary from "../features/diary/components/Diary";
+import HisabDiaryCustomers from "../features/hisabDiary/components/HisabDiaryCustomers";
+import AddHisabDiaryTransaction from "../features/hisabDiary/components/AddHisabDiaryTransaction";
+import AddHisabDiaryCustomer from "../features/hisabDiary/components/AddHisabDiaryCustomer";
+import HisabDiaryTransactions from "../features/hisabDiary/components/HisabDiaryTransactions";
 
 function App() {
 
@@ -35,6 +39,10 @@ function App() {
           <Route path="/b2bTransactions" element={<B2bTransactions />} />
           <Route path="/borrowingDashboard" element={<BorrowingDashboard />} />
           <Route path="/diary" element={<Diary />} />
+
+          <Route path="/hisabDiary" element={<HisabDiaryCustomers/>} />
+          <Route path="/hisabDiary/transaction" element={<HisabDiaryTransactions/>} />
+
         </Routes>
       </BrowserRouter>
 

@@ -106,14 +106,14 @@ export default function SideBar({ showLoader = false }) {
                             <Handshake className="mr-3" /> B2B Transactions
                         </div>
                         <div
-                            onClick={() => handleNavigation("/diary")}
-                            className={`${activeTab == "/diary"
+                            onClick={() => handleNavigation("/hisabDiary")}
+                            className={`${activeTab == "/hisabDiary"
                                 ? "text-white bg-[#6366F1]"
                                 : "text-black bg-white hover:bg-[#6366F1] hover:text-white"} 
-        flex !hidden items-center p-3 pl-8 px-6 cursor-pointer whitespace-nowrap font-semibold rounded-[0px_30px_30px_0px] transition-background duration-300`}
+        flex items-center p-3 pl-8 px-6 cursor-pointer whitespace-nowrap font-semibold rounded-[0px_30px_30px_0px] transition-background duration-300`}
                         >
                             <FileText className="mr-3" />
-                            Diary
+                            Hisab Diary
                         </div>
                         <Link to="/borrowingDashboard" className={`hidden ${activeTab == "/borrowingDashboard" ? "text-white bg-[#6366F1]" : "text-black bg-white hover:bg-[#6366F1] hover:text-white"} flex whitespace-nowrap items-center p-3 pl-8 px-6 cursor-pointer font-semibold rounded-[0px_30px_30px_0px] transition-background duration-300`}> <HandCoins className="mr-3" /> Borrowing Dashboard</Link>
                     </div> : <></>
