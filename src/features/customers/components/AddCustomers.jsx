@@ -245,6 +245,9 @@ export default function AddCustomers({ billType = "W" }) {
                     </div>
                 </div>
                 <AddItems customer={customer} cusType={cusType} setCusType={setCusType} setShowLoader={setShowLoader} handleAddCustomer={handleAddCustomer} setisBillGenFCur={setisBillGenFCur} isOldCus={isOldCus} setIsOldCus={setIsOldCus} />
+                <div className="text-center absolute bottom-8 text-xl left-[47.5%]">
+                    <h1 className="text-[#6366F1] font-semibold">DESIGN & DEVELOPED BY ATF LABS</h1>
+                </div>
             </div>
         </div>
     );

@@ -479,7 +479,7 @@ const InvoiceList = () => {
                 />
             }
 
-            <div className="p-5 pt-8 mb-10 mx-auto w-[80%]">
+            <div className="p-5 pt-8 mb-2 mx-auto w-[80%]">
                 <div className="max-w-7xl mx-auto">
 
                     {/* Header */}
@@ -685,6 +685,9 @@ const InvoiceList = () => {
                         {/* Infinite Scroll Trigger */}
                         {hasMore && <div ref={observerRef} className="h-10"></div>}
                     </div>
+                </div>
+                <div className="text-center text-lg mt-8">
+                    <h1 className="text-[#6366F1] font-semibold">DESIGN & DEVELOPED BY ATF LABS</h1>
                 </div>
             </div>
             <Toaster
