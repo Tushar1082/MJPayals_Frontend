@@ -28,7 +28,7 @@ export default function SideBar({ showLoader = false }) {
     }, [location.pathname]);
 
     return (
-        <div className="flex sticky top-0 bg-white h-[100vh] shadow-[0_0_14px_-2px_#d3d3d3]">
+        <div className="hidden sm:flex sticky top-0 bg-white h-[100vh] shadow-[0_0_14px_-2px_#d3d3d3]">
             {
                 activeTab ?
                     <div className="items-left w-full p-8 pl-0 pr-4 flex flex-col gap-4">

@@ -1,527 +1,41 @@
-// import React, { useState, useEffect } from "react";
-// import { toast, Toaster } from "react-hot-toast";
-// import { ArrowLeft, TrendingDown, TrendingUp, Calendar, IndianRupee, FileText, Trash2, AlertCircle, Scale, User, Phone, Building2 } from "lucide-react";
-// import SideBar from "../../../components/layout/SideBar/SideBar";
-// import { useNavigate, useSearchParams } from "react-router-dom";
-
-// export default function HisabDiaryTransactions() {
-//     const [showLoader, setShowLoader] = useState(false);
-//     const [transactions, setTransactions] = useState([]);
-//     const [customerInfo, setCustomerInfo] = useState(null);
-//     const [deleteModal, setDeleteModal] = useState({ show: false, transactionId: null });
-//     const [transactionsWithBalance, setTransactionsWithBalance] = useState([]);
-//     const navigate = useNavigate();
-//     const [searchParams] = useSearchParams();
-//     const cusId = searchParams.get('cusId');
-
-//     // Fetch customer info and transactions
-//     useEffect(() => {
-//         if (cusId) {
-//             fetchCustomerInfo();
-//             fetchTransactions();
-//         }
-//     }, [cusId]);
-
-//     const fetchCustomerInfo = async () => {
-//         try {
-//             const response = await fetch(`${import.meta.env.VITE_API_URL}/hisabDiary/customer/${cusId}`);
-//             const result = await response.json();
-//             if (result.status === "success") {
-//                 setCustomerInfo(result.data);
-//             }
-//         } catch (error) {
-//             console.error("Error fetching customer info:", error);
-//             toast.error("Failed to load customer information");
-//         }
-//     };
-
-//     const fetchTransactions = async () => {
-//         try {
-//             setShowLoader(true);
-//             const response = await fetch(`${import.meta.env.VITE_API_URL}/hisabDiary/transaction/customer/${cusId}`);
-//             const result = await response.json();
-            
-//             if (result.status === "success") {
-//                 setTransactions(result.data);
-//             } else if (result.status === "error") {
-//                 toast.error(result.message);
-//                 setTimeout(() => navigate("/hisabDiary"), 1500);
-//             }
-//         } catch (error) {
-//             console.error("Error fetching transactions:", error);
-//             toast.error("Failed to load transactions");
-//         } finally {
-//             setShowLoader(false);
-//         }
-//     };
-
-//     const handleDeleteTransaction = async () => {
-//         if (!deleteModal.transactionId) return;
-
-//         try {
-//             setShowLoader(true);
-//             const response = await fetch(
-//                 `${import.meta.env.VITE_API_URL}/hisabDiary/transaction/${deleteModal.transactionId}`,
-//                 { method: "DELETE" }
-//             );
-
-//             const result = await response.json();
-
-//             if (result.status === "success" || response.ok) {
-//                 toast.success("Transaction deleted successfully!");
-//                 setDeleteModal({ show: false, transactionId: null });
-//                 fetchTransactions();
-//             } else {
-//                 toast.error(result.message || "Failed to delete transaction");
-//             }
-//         } catch (error) {
-//             console.error("Error deleting transaction:", error);
-//             toast.error("Network error! Could not delete transaction.");
-//         } finally {
-//             setShowLoader(false);
-//         }
-//     };
-
-//     const formatDate = (dateString) => {
-//         const date = new Date(dateString);
-//         return date.toLocaleDateString('en-IN', {
-//             day: '2-digit',
-//             month: 'short',
-//             year: 'numeric'
-//         });
-//     };
-
-//     const formatWeight = (val) => {
-//         if (!val) return "0.000";
-//         return Number(val).toLocaleString("en-IN", {
-//             minimumFractionDigits: 3,
-//             maximumFractionDigits: 3
-//         });
-//     };
-
-//     const formatCurrency = (val) => {
-//         if (!val) return "0.00";
-//         return Number(val).toLocaleString("en-IN", {
-//             minimumFractionDigits: 2,
-//             maximumFractionDigits: 2
-//         });
-//     };
-
-//     // Calculate running balance for ladder view
-//     // const transactionsWithBalance = transactions.map((txn, index) => {
-//     //     const previousBalance = index === 0 ? 0 : transactionsWithBalance[index - 1].runningBalance;
-//     //     const currentAmount = txn.transactionType === "J" ? txn.silverInGram : -txn.silverInGram;
-//     //     const runningBalance = previousBalance + currentAmount;
-        
-//     //     return {
-//     //         ...txn,
-//     //         runningBalance
-//     //     };
-//     // });
-
-//     // Calculate totals
-//     const totalNaam = transactions
-//         .filter(t => t.transactionType === "N")
-//         .reduce((sum, t) => sum + t.silverInGram, 0);
-    
-//     const totalJama = transactions
-//         .filter(t => t.transactionType === "J")
-//         .reduce((sum, t) => sum + t.silverInGram, 0);
-    
-//     const finalBalance = totalJama - totalNaam;
-
-//     // Calculate running balance using useEffect
-// useEffect(() => {
-//     let currentRunningBalance = 0;
-    
-//     const calculatedTransactions = transactions.map((txn) => {
-//         // Jama hai toh plus, Naam hai toh minus
-//         const currentAmount = txn.transactionType === "J" ? txn.silverInGram : -txn.silverInGram;
-//         currentRunningBalance += currentAmount;
-        
-//         return {
-//             ...txn,
-//             runningBalance: currentRunningBalance
-//         };
-//     });
-
-//     setTransactionsWithBalance(calculatedTransactions);
-// }, [transactions]); // Jab bhi transactions update honge, ye khud chal jayega
-
-//     return (
-//         <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
-//             <SideBar showLoader={showLoader && transactions.length === 0} />
-            
-//             <div className="flex-1 p-4 sm:p-6 lg:p-8">
-//                 <div className="max-w-7xl mx-auto">
-                    
-//                     {/* Header */}
-//                     <div className="mb-6 sm:mb-8">
-//                         <button 
-//                             onClick={() => navigate("/hisabDiary")}
-//                             className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors mb-4 group"
-//                         >
-//                             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-//                             <span className="font-semibold">Back to Dashboard</span>
-//                         </button>
-                        
-//                         {customerInfo && (
-//                             <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-lg">
-//                                 <div className="flex items-start justify-between flex-wrap gap-4">
-//                                     <div className="flex-1 min-w-0">
-//                                         <div className="flex items-center gap-3 mb-3">
-//                                             <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
-//                                                 <User className="w-6 h-6 text-white" />
-//                                             </div>
-//                                             <div>
-//                                                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 capitalize">
-//                                                     {customerInfo.name}
-//                                                 </h1>
-//                                                 <p className="text-sm text-gray-600">Customer Ledger</p>
-//                                             </div>
-//                                         </div>
-                                        
-//                                         <div className="flex flex-wrap gap-4 text-sm">
-//                                             {customerInfo.phone && (
-//                                                 <div className="flex items-center gap-2 text-gray-700">
-//                                                     <Phone className="w-4 h-4 text-gray-400" />
-//                                                     <span className="font-medium">{customerInfo.phone}</span>
-//                                                 </div>
-//                                             )}
-//                                             {customerInfo.firmName && (
-//                                                 <div className="flex items-center gap-2 text-gray-700">
-//                                                     <Building2 className="w-4 h-4 text-gray-400" />
-//                                                     <span className="font-medium">{customerInfo.firmName}</span>
-//                                                 </div>
-//                                             )}
-//                                         </div>
-//                                     </div>
-
-//                                     {/* Summary Cards */}
-//                                     <div className="flex flex-wrap gap-3">
-//                                         <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 border-2 border-red-200 min-w-[140px]">
-//                                             <div className="text-xs font-bold text-red-600 uppercase mb-1">Total Naam</div>
-//                                             <div className="text-xl font-black text-red-700">
-//                                                 {formatWeight(totalNaam)} <span className="text-xs">g</span>
-//                                             </div>
-//                                         </div>
-                                        
-//                                         <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4 border-2 border-emerald-200 min-w-[140px]">
-//                                             <div className="text-xs font-bold text-emerald-600 uppercase mb-1">Total Jama</div>
-//                                             <div className="text-xl font-black text-emerald-700">
-//                                                 {formatWeight(totalJama)} <span className="text-xs">g</span>
-//                                             </div>
-//                                         </div>
-                                        
-//                                         <div className={`rounded-xl p-4 border-2 min-w-[140px] ${
-//                                             finalBalance < 0 
-//                                                 ? 'bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200' 
-//                                                 : finalBalance > 0
-//                                                 ? 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200'
-//                                                 : 'bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200'
-//                                         }`}>
-//                                             <div className="text-xs font-bold text-gray-700 uppercase mb-1">Net Balance</div>
-//                                             <div className={`text-xl font-black ${
-//                                                 finalBalance < 0 ? 'text-orange-700' : finalBalance > 0 ? 'text-blue-700' : 'text-gray-700'
-//                                             }`}>
-//                                                 {formatWeight(Math.abs(finalBalance))} <span className="text-xs">g</span>
-//                                                 {finalBalance !== 0 && (
-//                                                     <span className="text-xs ml-1">
-//                                                         {finalBalance < 0 ? '(Dr)' : '(Cr)'}
-//                                                     </span>
-//                                                 )}
-//                                             </div>
-//                                         </div>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         )}
-//                     </div>
-
-//                     {/* Ledger - Ladder Style */}
-//                     <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-xl overflow-hidden">
-//                         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 sm:px-8 py-5 text-white">
-//                             <div className="flex items-center justify-between">
-//                                 <h2 className="text-xl font-bold flex items-center gap-2">
-//                                     <Scale className="w-6 h-6" />
-//                                     Transaction Ledger
-//                                 </h2>
-//                                 <div className="text-sm font-semibold">
-//                                     {transactions.length} {transactions.length === 1 ? 'Entry' : 'Entries'}
-//                                 </div>
-//                             </div>
-//                         </div>
-
-//                         {transactions.length > 0 ? (
-//                             <div className="divide-y divide-gray-200">
-//                                 {transactionsWithBalance.map((txn, index) => {
-//                                     const isNaam = txn.transactionType === "N";
-//                                     const balanceIsNegative = txn.runningBalance < 0;
-                                    
-//                                     return (
-//                                         <div
-//                                             key={txn.id}
-//                                             className="hover:bg-slate-50 transition-colors"
-//                                         >
-//                                             {/* Desktop View */}
-//                                             <div className="hidden lg:grid grid-cols-[120px_1fr_140px_140px_140px_60px] gap-4 items-center p-6">
-//                                                 {/* Date */}
-//                                                 <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
-//                                                     <Calendar className="w-4 h-4 text-gray-400" />
-//                                                     <span>{formatDate(txn.transactionDate)}</span>
-//                                                 </div>
-
-//                                                 {/* Transaction Type & Comment */}
-//                                                 <div>
-//                                                     <div className="flex items-center gap-2 mb-1">
-//                                                         {isNaam ? (
-//                                                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-lg border border-red-200">
-//                                                                 <TrendingDown className="w-3.5 h-3.5" />
-//                                                                 Naam
-//                                                             </span>
-//                                                         ) : (
-//                                                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-200">
-//                                                                 <TrendingUp className="w-3.5 h-3.5" />
-//                                                                 Jama
-//                                                             </span>
-//                                                         )}
-//                                                         <span className="text-sm font-bold text-gray-900">
-//                                                             {formatWeight(txn.silverInGram)} g
-//                                                         </span>
-//                                                     </div>
-//                                                     {txn.comment && (
-//                                                         <div className="flex items-start gap-1.5 mt-1">
-//                                                             <FileText className="w-3.5 h-3.5 text-gray-400 flex-shrink-0 mt-0.5" />
-//                                                             <span className="text-xs text-gray-600 line-clamp-1">{txn.comment}</span>
-//                                                         </div>
-//                                                     )}
-//                                                 </div>
-
-//                                                 {/* Naam Column */}
-//                                                 <div className="text-right">
-//                                                     {isNaam && (
-//                                                         <div className="inline-flex flex-col items-end gap-1">
-//                                                             <span className="text-base font-bold text-red-700">
-//                                                                 {formatWeight(txn.silverInGram)} g
-//                                                             </span>
-//                                                             <span className="text-xs text-red-600">
-//                                                                 ₹ {formatCurrency(txn.cash)}
-//                                                             </span>
-//                                                         </div>
-//                                                     )}
-//                                                 </div>
-
-//                                                 {/* Jama Column */}
-//                                                 <div className="text-right">
-//                                                     {!isNaam && (
-//                                                         <div className="inline-flex flex-col items-end gap-1">
-//                                                             <span className="text-base font-bold text-emerald-700">
-//                                                                 {formatWeight(txn.silverInGram)} g
-//                                                             </span>
-//                                                             <span className="text-xs text-emerald-600">
-//                                                                 ₹ {formatCurrency(txn.cash)}
-//                                                             </span>
-//                                                         </div>
-//                                                     )}
-//                                                 </div>
-
-//                                                 {/* Running Balance */}
-//                                                 <div className="text-right">
-//                                                     <div className={`inline-flex flex-col items-end px-3 py-2 rounded-lg ${
-//                                                         balanceIsNegative 
-//                                                             ? 'bg-orange-50 border border-orange-200' 
-//                                                             : txn.runningBalance > 0
-//                                                             ? 'bg-blue-50 border border-blue-200'
-//                                                             : 'bg-gray-50 border border-gray-200'
-//                                                     }`}>
-//                                                         <span className={`text-sm font-black ${
-//                                                             balanceIsNegative ? 'text-orange-700' : txn.runningBalance > 0 ? 'text-blue-700' : 'text-gray-700'
-//                                                         }`}>
-//                                                             {formatWeight(Math.abs(txn.runningBalance))} g
-//                                                         </span>
-//                                                         {txn.runningBalance !== 0 && (
-//                                                             <span className="text-[10px] font-bold text-gray-600">
-//                                                                 {balanceIsNegative ? 'Dr' : 'Cr'}
-//                                                             </span>
-//                                                         )}
-//                                                     </div>
-//                                                 </div>
-
-//                                                 {/* Delete */}
-//                                                 <div className="text-center">
-//                                                     <button
-//                                                         onClick={() => setDeleteModal({ show: true, transactionId: txn.id })}
-//                                                         className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-//                                                         title="Delete"
-//                                                     >
-//                                                         <Trash2 className="w-4 h-4" />
-//                                                     </button>
-//                                                 </div>
-//                                             </div>
-
-//                                             {/* Mobile View */}
-//                                             <div className="lg:hidden p-5 space-y-3">
-//                                                 <div className="flex items-center justify-between">
-//                                                     <div className="flex items-center gap-2 text-sm text-gray-600">
-//                                                         <Calendar className="w-4 h-4" />
-//                                                         {formatDate(txn.transactionDate)}
-//                                                     </div>
-//                                                     <button
-//                                                         onClick={() => setDeleteModal({ show: true, transactionId: txn.id })}
-//                                                         className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
-//                                                     >
-//                                                         <Trash2 className="w-4 h-4" />
-//                                                     </button>
-//                                                 </div>
-
-//                                                 <div className="flex items-center gap-2">
-//                                                     {isNaam ? (
-//                                                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-lg">
-//                                                             <TrendingDown className="w-3.5 h-3.5" />
-//                                                             Naam
-//                                                         </span>
-//                                                     ) : (
-//                                                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg">
-//                                                             <TrendingUp className="w-3.5 h-3.5" />
-//                                                             Jama
-//                                                         </span>
-//                                                     )}
-//                                                     <span className="font-bold text-gray-900">
-//                                                         {formatWeight(txn.silverInGram)} g
-//                                                     </span>
-//                                                     <span className="text-sm text-gray-600">
-//                                                         • ₹ {formatCurrency(txn.cash)}
-//                                                     </span>
-//                                                 </div>
-
-//                                                 <div className={`p-3 rounded-lg ${
-//                                                     balanceIsNegative ? 'bg-orange-50' : txn.runningBalance > 0 ? 'bg-blue-50' : 'bg-gray-50'
-//                                                 }`}>
-//                                                     <div className="text-xs text-gray-600 mb-1">Running Balance:</div>
-//                                                     <div className={`text-base font-black ${
-//                                                         balanceIsNegative ? 'text-orange-700' : txn.runningBalance > 0 ? 'text-blue-700' : 'text-gray-700'
-//                                                     }`}>
-//                                                         {formatWeight(Math.abs(txn.runningBalance))} g
-//                                                         {txn.runningBalance !== 0 && (
-//                                                             <span className="text-xs ml-1">
-//                                                                 ({balanceIsNegative ? 'Dr' : 'Cr'})
-//                                                             </span>
-//                                                         )}
-//                                                     </div>
-//                                                 </div>
-
-//                                                 {txn.comment && (
-//                                                     <div className="flex items-start gap-2 text-xs text-gray-600 bg-gray-50 p-2 rounded-lg">
-//                                                         <FileText className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-//                                                         <span>{txn.comment}</span>
-//                                                     </div>
-//                                                 )}
-//                                             </div>
-//                                         </div>
-//                                     );
-//                                 })}
-//                             </div>
-//                         ) : (
-//                             <div className="py-20 flex flex-col items-center justify-center text-center">
-//                                 <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mb-4 border-2 border-indigo-200">
-//                                     <FileText className="w-10 h-10 text-indigo-400" />
-//                                 </div>
-//                                 <h3 className="text-xl font-bold text-gray-900 mb-2">No transactions yet</h3>
-//                                 <p className="text-gray-500 text-sm max-w-sm">
-//                                     No transactions have been recorded for this customer.
-//                                 </p>
-//                             </div>
-//                         )}
-//                     </div>
-
-//                     {/* Footer */}
-//                     <div className="text-center mt-8 py-4">
-//                         <h1 className="text-xs font-bold tracking-widest text-indigo-600/70 uppercase">
-//                             Design & Developed by ATF Labs
-//                         </h1>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             {/* Delete Modal */}
-//             {deleteModal.show && (
-//                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-//                     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8">
-//                         <div className="flex items-center gap-4 mb-6">
-//                             <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-//                                 <AlertCircle className="w-7 h-7 text-red-600" />
-//                             </div>
-//                             <div>
-//                                 <h3 className="text-xl font-bold text-gray-900">Delete Transaction?</h3>
-//                                 <p className="text-sm text-gray-600 mt-1">This action cannot be undone</p>
-//                             </div>
-//                         </div>
-                        
-//                         <p className="text-gray-700 mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
-//                             Deleting this transaction will permanently remove it and recalculate the customer's balance.
-//                         </p>
-                        
-//                         <div className="flex gap-3">
-//                             <button
-//                                 onClick={() => setDeleteModal({ show: false, transactionId: null })}
-//                                 className="flex-1 px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors"
-//                                 disabled={showLoader}
-//                             >
-//                                 Cancel
-//                             </button>
-//                             <button
-//                                 onClick={handleDeleteTransaction}
-//                                 className="flex-1 px-5 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-red-200 disabled:from-red-300 disabled:to-red-400"
-//                                 disabled={showLoader}
-//                             >
-//                                 {showLoader ? "Deleting..." : "Delete"}
-//                             </button>
-//                         </div>
-//                     </div>
-//                 </div>
-//             )}
-
-//             <Toaster 
-//                 position="top-right"
-//                 toastOptions={{
-//                     duration: 3000,
-//                     style: {
-//                         background: '#333',
-//                         color: '#fff',
-//                         fontWeight: '600',
-//                     },
-//                 }}
-//             />
-//         </div>
-//     );
-// }
-
-
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { toast, Toaster } from "react-hot-toast";
-import { 
-    ArrowLeft, TrendingDown, TrendingUp, Calendar, 
-    FileText, Trash2, AlertCircle, Scale, User, 
-    Phone, Building2, ChevronRight, Download
+import {
+    ArrowLeft, FileText, Trash2, AlertCircle,
+    Phone, Building2, X, ArrowLeftRight
 } from "lucide-react";
 import SideBar from "../../../components/layout/SideBar/SideBar";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import AddHisabDiaryTransaction from "./AddHisabDiaryTransaction";
 
 export default function HisabDiaryTransactions() {
     const [showLoader, setShowLoader] = useState(false);
     const [transactions, setTransactions] = useState([]);
     const [customerInfo, setCustomerInfo] = useState(null);
+    const [summary, setSummary] = useState(null);
+    const [totalRecords, setTotalRecords] = useState(0);
+
+    // Modals State
     const [deleteModal, setDeleteModal] = useState({ show: false, transactionId: null });
-    const [transactionsWithBalance, setTransactionsWithBalance] = useState([]);
+    const [commentModal, setCommentModal] = useState({ show: false, text: "" });
+    const [showAddTransaction, setShowAddTransaction] = useState(false);
+
+    // Infinite Scroll States
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const itemsPerLoad = 20;
+    const observerRef = useRef(null);
+
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const cusId = searchParams.get('cusId');
 
+    // ================= DATA FETCHING =================
     useEffect(() => {
         if (cusId) {
             fetchCustomerInfo();
-            fetchTransactions();
+            setPage(1);
+            fetchTransactions(1, true);
         }
     }, [cusId]);
 
@@ -535,16 +49,28 @@ export default function HisabDiaryTransactions() {
         }
     };
 
-    const fetchTransactions = async () => {
+    const fetchTransactions = async (pageNum, resetData = false) => {
         try {
             setShowLoader(true);
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/hisabDiary/transaction/customer/${cusId}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/hisabDiary/transaction/customer/${cusId}?page=${pageNum}&pageSize=${itemsPerLoad}`);
             const result = await response.json();
+
             if (result.status === "success") {
-                setTransactions(result.data);
+                if (resetData) {
+                    setTransactions(result.data);
+                } else {
+                    setTransactions(prev => [...prev, ...result.data]);
+                }
+
+                // Directly backend ka summary set karo
+                if (result.summary) setSummary(result.summary);
+
+                const { currentPage, totalPages, totalRecords: tr } = result.pagination;
+                setTotalRecords(tr);
+                setHasMore(currentPage < totalPages);
             } else {
                 toast.error(result.message);
-                setTimeout(() => navigate("/hisabDiary"), 1500);
+                if (resetData) setTimeout(() => navigate("/hisabDiary"), 1500);
             }
         } catch (error) {
             toast.error("Failed to load transactions");
@@ -559,9 +85,10 @@ export default function HisabDiaryTransactions() {
             setShowLoader(true);
             const response = await fetch(`${import.meta.env.VITE_API_URL}/hisabDiary/transaction/${deleteModal.transactionId}`, { method: "DELETE" });
             if (response.ok) {
-                toast.success("Entry deleted");
+                toast.success("Entry deleted successfully");
                 setDeleteModal({ show: false, transactionId: null });
-                fetchTransactions();
+                setPage(1);
+                fetchTransactions(1, true); // Refresh to update server-side balances
             }
         } catch (error) {
             toast.error("Network error");
@@ -570,82 +97,132 @@ export default function HisabDiaryTransactions() {
         }
     };
 
+    // Trigger next page fetch on scroll
     useEffect(() => {
-        let currentRunningBalance = 0;
-        const calculatedTransactions = transactions.map((txn) => {
-            const currentAmount = txn.transactionType === "J" ? txn.silverInGram : -txn.silverInGram;
-            currentRunningBalance += currentAmount;
-            return { ...txn, runningBalance: currentRunningBalance };
-        }).reverse(); // Latest transaction on top for professional view
-        setTransactionsWithBalance(calculatedTransactions);
-    }, [transactions]);
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && hasMore && !showLoader) {
+                const nextPage = page + 1;
+                setPage(nextPage);
+                fetchTransactions(nextPage, false);
+            }
+        });
 
-    const formatWeight = (val) => Number(val || 0).toFixed(3);
-    const formatCurrency = (val) => Number(val || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 });
-    
-    const totalNaam = transactions.filter(t => t.transactionType === "N").reduce((sum, t) => sum + t.silverInGram, 0);
-    const totalJama = transactions.filter(t => t.transactionType === "J").reduce((sum, t) => sum + t.silverInGram, 0);
-    const finalBalance = totalJama - totalNaam;
+        if (observerRef.current) observer.observe(observerRef.current);
+        return () => observer.disconnect();
+    }, [hasMore, showLoader, page]);
+
+    // Refresh when modal closes (in case a new transaction was added)
+    useEffect(() => {
+        if (!showAddTransaction && cusId) {
+            setPage(1);
+            fetchTransactions(1, true);
+        }
+    }, [showAddTransaction]);
+
+    // ================= FORMATTERS =================
+    const formatWeight = (val) => {
+        if (!val) return "0.000";
+        return Number(val).toLocaleString("en-IN", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    };
+
+    const formatCurrency = (val) => {
+        if (!val) return "₹0.00";
+        return Number(val).toLocaleString("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
 
     return (
-        <div className="flex min-h-screen bg-[#F8FAFC]">
+        <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
             <SideBar showLoader={showLoader && transactions.length === 0} />
-            
-            <div className="flex-1 lg:pl-4">
-                <div className="p-4 py-6">
-                    
-                    {/* Top Navigation & Action */}
-                    {/* <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"> */}
-                        <div className="mb-4">
-                            <button 
+
+            {/* Add Transaction Modal with Preselected Customer */}
+            <AddHisabDiaryTransaction
+                showAddTransaction={showAddTransaction}
+                setShowAddTransaction={setShowAddTransaction}
+                preselectedCustomer={customerInfo} // Auto-select fix
+            />
+
+            <div className="flex-1 p-4 sm:p-6 lg:p-8">
+                <div className="max-w-[1600px] mx-auto">
+
+                    {/* Top Navigation & Actions */}
+                    <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <button
                                 onClick={() => navigate("/hisabDiary")}
-                                className="group flex items-center text-slate-500 hover:text-slate-900 transition-all text-sm font-medium mb-2"
+                                className="group flex items-center text-gray-500 hover:text-gray-900 transition-all text-sm font-medium mb-2"
                             >
                                 <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                                Back to Ledger
+                                Back
                             </button>
-                            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
                                 Transaction History
                             </h1>
                         </div>
-                        {/* <div className="flex gap-2">
-                            <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-all shadow-sm">
-                                <Download className="w-4 h-4" />
-                                Export PDF
-                            </button>
-                        </div> */}
-                    {/* </div> */}
+                        <button
+                            onClick={() => setShowAddTransaction(true)}
+                            className="flex items-center justify-center gap-2 px-5 py-3 bg-black hover:bg-black/80 text-white rounded-lg focus:outline-none font-semibold transition-all shadow-md"
+                        >
+                            <ArrowLeftRight className="w-5 h-5" />
+                            <span>New Transaction</span>
+                        </button>
+                    </div>
 
                     {/* Customer Profile Header */}
-                    {customerInfo && (
-                        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 px-6 py-4 mb-5">
+                    {customerInfo && summary && (
+                        <div className="bg-white rounded-xl shadow-[0_1px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] border border-gray-200 px-6 py-4 mb-6">
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                                 <div className="lg:col-span-5 flex items-center gap-5">
                                     <div>
-                                        <h2 className="text-2xl font-bold text-slate-900 capitalize leading-tight">
+                                        <h2 className="text-2xl font-bold text-gray-900 capitalize leading-tight">
                                             {customerInfo.name}
                                         </h2>
-                                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-slate-500 text-sm">
-                                            <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5"/> {customerInfo.phone}</span>
-                                            {customerInfo.firmName && <span className="flex items-center gap-1"><Building2 className="w-3.5 h-3.5"/> {customerInfo.firmName}</span>}
+                                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-gray-500 text-sm">
+                                            {customerInfo.phone && <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" /> {customerInfo.phone}</span>}
+                                            {customerInfo.firmName && <span className="flex items-center gap-1"><Building2 className="w-3.5 h-3.5" /> {customerInfo.firmName}</span>}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    <div className="px-4 py-2  rounded-xl bg-slate-50 border border-slate-100">
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Net Balance</p>
-                                        <p className={`text-xl font-bold ${finalBalance < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                                            {formatWeight(Math.abs(finalBalance))} <span className="text-xs font-medium italic">g {finalBalance < 0 ? 'Dr' : 'Cr'}</span>
-                                        </p>
+                                    <div className="px-4 py-2 rounded-xl bg-gray-50 border border-gray-200">
+                                        <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Net Balance</p>
+                                        {summary.netSilver !== 0 && summary.netCash !== 0 ? (
+                                            <div className="flex flex-col">
+                                                <div className={`text-sm font-bold ${summary.netSilver < 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+                                                    <span className="mr-1 text-xs opacity-80">Silver:</span>{formatWeight(Math.abs(summary.netSilver))} g
+                                                </div>
+                                                <div className={`text-sm font-bold ${summary.netCash < 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+                                                    <span className="mr-1 text-xs opacity-80">Cash:</span>{formatCurrency(Math.abs(summary.netCash))}
+                                                </div>
+                                            </div>
+                                        ) : summary.netCash !== 0 ? (
+                                            <div className={`text-lg font-bold ${summary.netCash < 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+                                                {formatCurrency(Math.abs(summary.netCash))}
+                                            </div>
+                                        ) : (
+                                            <div className={`text-lg font-bold text-gray-700`}>
+                                                0
+                                            </div>
+                                            // <div className={`text-lg font-bold ${summary.netSilver < 0 ? 'text-red-600' : summary.netSilver > 0 ? 'text-emerald-600' : 'text-gray-700'}`}>
+                                            //     {formatWeight(Math.abs(summary.netSilver))} g
+                                            // </div>
+                                        )}
                                     </div>
-                                    <div className="px-4 py-2  rounded-xl bg-slate-50 border border-slate-100">
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Jama</p>
-                                        <p className="text-xl font-bold text-slate-800">{formatWeight(totalJama)} <span className="text-xs font-medium">g</span></p>
+                                    <div className="px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-200">
+                                        <p className="text-sm font-bold text-emerald-600 uppercase tracking-wider mb-1">Total Jama</p>
+                                        <div className="flex flex-col">
+                                            {summary.totalJamaSilver > 0 && <span className="text-sm font-bold text-emerald-700">{formatWeight(summary.totalJamaSilver)} g</span>}
+                                            {summary.totalJamaCash > 0 && <span className="text-sm font-bold text-emerald-700">{formatCurrency(summary.totalJamaCash)}</span>}
+                                            {summary.totalJamaSilver === 0 && summary.totalJamaCash === 0 && <span className="text-sm font-bold text-emerald-700">0.000 g</span>}
+                                        </div>
                                     </div>
-                                    <div className="px-4 py-2  rounded-xl bg-slate-50 border border-slate-100 col-span-2 md:col-span-1">
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Naam</p>
-                                        <p className="text-xl font-bold text-slate-800">{formatWeight(totalNaam)} <span className="text-xs font-medium">g</span></p>
+                                    <div className="px-4 py-2 rounded-xl bg-rose-50 border border-rose-200 col-span-2 md:col-span-1">
+                                        <p className="text-sm font-bold text-rose-600 uppercase tracking-wider mb-1">Total Naam</p>
+                                        <div className="flex flex-col">
+                                            {summary.totalNaamSilver > 0 && <span className="text-sm font-bold text-rose-700">{formatWeight(summary.totalNaamSilver)} g</span>}
+                                            {summary.totalNaamCash > 0 && <span className="text-sm font-bold text-rose-700">{formatCurrency(summary.totalNaamCash)}</span>}
+                                            {summary.totalNaamSilver === 0 && summary.totalNaamCash === 0 && <span className="text-sm font-bold text-rose-700">0.000 g</span>}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -653,54 +230,102 @@ export default function HisabDiaryTransactions() {
                     )}
 
                     {/* Data Table */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden mb-6">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-slate-50/50 border-b border-slate-200">
-                                        <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Date</th>
-                                        <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Details</th>
-                                        <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider text-right">Naam (Dr)</th>
-                                        <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider text-right">Jama (Cr)</th>
-                                        <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider text-right">Balance</th>
-                                        <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider"></th>
+                                    <tr className="bg-gray-50 border-b border-gray-200">
+                                        {/* <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">S.No.</th> */}
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider w-48">Comment</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Naam</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Jama</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Running Balance</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100">
-                                    {transactionsWithBalance.map((txn) => {
+                                <tbody className="divide-y divide-gray-200">
+                                    {transactions.map((txn, idx) => {
                                         const isNaam = txn.transactionType === "N";
+                                        const silver = Number(txn.silverInGram || 0);
+                                        const cash = Number(txn.cash || 0);
+                                        const runSilver = Number(txn.runningSilver || 0);
+                                        const runCash = Number(txn.runningCash || 0);
+
+                                        // S.No Formula (Since we display latest first)
+                                        // const serialNumber = totalRecords - idx;
+
                                         return (
-                                            <tr key={txn.id} className="hover:bg-slate-50/50 transition-colors group">
+                                            <tr key={txn.id} className="hover:bg-indigo-50/30 transition-colors group">
+                                                {/* <td className="pr-6 pl-8 py-4 text-sm text-gray-500 font-medium">
+                                                    {serialNumber}.
+                                                </td> */}
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-semibold text-slate-700">
+                                                    <div className="text-sm font-semibold text-gray-700">
                                                         {new Date(txn.transactionDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-medium text-slate-900">{txn.comment || "Self Entry"}</span>
-                                                        <span className="text-[11px] text-slate-400 mt-0.5">ID: #{txn.id.toString().slice(-6)}</span>
+
+                                                {/* Comment Column */}
+                                                <td className="px-6 py-4 max-w-[200px]">
+                                                    <div
+                                                        className={`text-sm font-medium text-gray-900 ${txn.comment ? 'cursor-pointer hover:text-indigo-600' : ''}`}
+                                                        onClick={() => txn.comment && setCommentModal({ show: true, text: txn.comment })}
+                                                        title={txn.comment ? "Click to read full comment" : ""}
+                                                    >
+                                                        {txn.comment ? (
+                                                            <div className="line-clamp-2 leading-snug">
+                                                                {txn.comment}
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-gray-400 italic">No comment</span>
+                                                        )}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 text-right">
+
+                                                {/* Naam Column */}
+                                                <td className="px-6 py-4 text-right whitespace-nowrap">
                                                     {isNaam ? (
-                                                        <div className="text-sm font-bold text-rose-600">{formatWeight(txn.silverInGram)} g</div>
-                                                    ) : <span className="text-slate-300 text-xs">—</span>}
+                                                        <div className="flex flex-col items-end gap-1">
+                                                            {silver > 0 && <div className="text-sm font-bold text-red-600">{formatWeight(silver)} g</div>}
+                                                            {cash > 0 && <div className="text-sm font-bold text-red-500">{formatCurrency(cash)}</div>}
+                                                        </div>
+                                                    ) : <span className="text-gray-300 font-bold">—</span>}
                                                 </td>
-                                                <td className="px-6 py-4 text-right">
+
+                                                {/* Jama Column */}
+                                                <td className="px-6 py-4 text-right whitespace-nowrap">
                                                     {!isNaam ? (
-                                                        <div className="text-sm font-bold text-emerald-600">{formatWeight(txn.silverInGram)} g</div>
-                                                    ) : <span className="text-slate-300 text-xs">—</span>}
+                                                        <div className="flex flex-col items-end gap-1">
+                                                            {silver > 0 && <div className="text-sm font-bold text-emerald-600">{formatWeight(silver)} g</div>}
+                                                            {cash > 0 && <div className="text-sm font-bold text-emerald-500">{formatCurrency(cash)}</div>}
+                                                        </div>
+                                                    ) : <span className="text-gray-300 font-bold">—</span>}
                                                 </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <div className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${txn.runningBalance < 0 ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'}`}>
-                                                        {formatWeight(Math.abs(txn.runningBalance))} g {txn.runningBalance < 0 ? 'Dr' : 'Cr'}
+
+                                                {/* Running Balance Column (Backend Provided) */}
+                                                <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                    <div className="flex flex-col items-end gap-1">
+                                                        {runSilver !== 0 && runCash !== 0 ? (
+                                                            <>
+                                                                <div className={`text-sm font-bold ${runSilver < 0 ? 'text-red-600' : 'text-emerald-600'}`}>{formatWeight(Math.abs(runSilver))} g</div>
+                                                                <div className={`text-xs font-bold ${runCash < 0 ? 'text-red-600' : 'text-emerald-600'}`}>{formatCurrency(Math.abs(runCash))}</div>
+                                                            </>
+                                                        ) : runCash !== 0 ? (
+                                                            <div className={`text-sm font-bold ${runCash < 0 ? 'text-red-600' : 'text-emerald-600'}`}>{formatCurrency(Math.abs(runCash))}</div>
+                                                        ) : (
+                                                            // <div className={`text-sm font-bold ${runSilver < 0 ? 'text-red-600' : runSilver > 0 ? 'text-emerald-600' : 'text-gray-600'}`}>{formatWeight(Math.abs(runSilver))} g</div>
+                                                            <div className={`text-sm font-bold text-gray-600`}>0</div>
+                                                        )}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <button 
+
+                                                {/* Delete Action */}
+                                                <td className="px-6 py-4 text-center">
+                                                    <button
                                                         onClick={() => setDeleteModal({ show: true, transactionId: txn.id })}
-                                                        className="opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                                                        className="bg-red-600 hover:bg-red-700 transition-colors duration-300 text-white p-2 px-3 font-semibold rounded-lg mx-auto flex items-center justify-center shadow-sm"
+                                                        title="Delete Entry"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
@@ -710,55 +335,106 @@ export default function HisabDiaryTransactions() {
                                     })}
                                 </tbody>
                             </table>
-                            
-                            {transactions.length === 0 && (
-                                <div className="py-24 text-center">
-                                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">
-                                        <FileText className="w-8 h-8" />
+
+                            {/* Empty State */}
+                            {transactions.length === 0 && !showLoader && (
+                                <div className="py-20 flex flex-col items-center justify-center text-center">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mb-4 border border-indigo-200">
+                                        <FileText className="w-8 h-8 text-indigo-400" />
                                     </div>
-                                    <h3 className="text-slate-900 font-bold">No entries found</h3>
-                                    <p className="text-slate-500 text-sm">Start by adding a transaction for this customer.</p>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-1">No entries found</h3>
+                                    <p className="text-gray-500 text-sm">Start by adding a transaction for this customer.</p>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    <footer className="mt-12 mb-6 text-center">
-                        <p className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase">
-                            Enterprise Ledger System • ATF Labs
-                        </p>
-                    </footer>
+                    {/* Server-side Infinite Scroll Loader Indicator */}
+                    {hasMore && (
+                        <div ref={observerRef} className="py-6 flex items-center justify-center">
+                            {transactions.length > 0 && (
+                                <div className="flex items-center gap-3 text-sm text-indigo-600 font-semibold">
+                                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Loading more transactions...
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="text-center mt-8 py-6">
+                        <h1 className="text-[#6366F1] text-lg font-semibold uppercase">
+                            Design & Developed by ATF Labs
+                        </h1>
+                    </div>
                 </div>
             </div>
 
-            {/* Delete Modal - Refined */}
-            {deleteModal.show && (
+            {/* Read Full Comment Modal */}
+            {commentModal.show && (
                 <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-[2px] flex items-center justify-center z-[100] p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-200">
-                        <div className="flex flex-col items-center text-center mb-6">
-                            <div className="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-4">
-                                <AlertCircle className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-900">Confirm Deletion</h3>
-                            <p className="text-sm text-slate-500 mt-1">This will permanently remove the record and update the balance.</p>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            <button 
-                                onClick={() => setDeleteModal({ show: false, transactionId: null })}
-                                className="px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50"
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50">
+                            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-indigo-500" />
+                                Full Comment
+                            </h3>
+                            <button
+                                onClick={() => setCommentModal({ show: false, text: "" })}
+                                className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
                             >
-                                Cancel
+                                <X className="w-5 h-5" />
                             </button>
-                            <button 
-                                onClick={handleDeleteTransaction}
-                                className="px-4 py-2.5 bg-rose-600 text-white rounded-xl font-bold hover:bg-rose-700 shadow-lg shadow-rose-100"
+                        </div>
+                        <div className="p-6 max-h-[60vh] overflow-y-auto">
+                            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-sm font-medium">
+                                {commentModal.text}
+                            </p>
+                        </div>
+                        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 text-right">
+                            <button
+                                onClick={() => setCommentModal({ show: false, text: "" })}
+                                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-colors shadow-sm"
                             >
-                                Delete
+                                Close
                             </button>
                         </div>
                     </div>
                 </div>
             )}
+
+            {/* Delete Confirmation Modal */}
+            {deleteModal.show && (
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-[2px] flex items-center justify-center z-[100] p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-gray-200 animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex flex-col items-center text-center mb-6">
+                            <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-red-600 mb-4 border border-red-100">
+                                <AlertCircle className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-900">Confirm Deletion</h3>
+                            <p className="text-sm text-gray-500 mt-1">This will permanently remove the record and recalculate running balances.</p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button
+                                onClick={() => setDeleteModal({ show: false, transactionId: null })}
+                                className="px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDeleteTransaction}
+                                disabled={showLoader}
+                                className="px-4 py-2.5 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 shadow-sm transition-colors disabled:opacity-50 flex justify-center items-center"
+                            >
+                                {showLoader ? "Deleting..." : "Delete"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            <Toaster position="top-right" toastOptions={{ style: { pointerEvents: "none", fontWeight: '600' } }} />
         </div>
     );
 }

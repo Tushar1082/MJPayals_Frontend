@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { UserPlus, Save, ArrowLeft, User, Phone, Building2, MapPin, Home, X } from "lucide-react";
-import SideBar from "../../../components/layout/SideBar/SideBar";
-import { useNavigate } from "react-router-dom";
 
 export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
     const [customer, setCustomer] = useState({
@@ -13,13 +11,43 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
         firmName: ""
     });
     const [showLoader, setShowLoader] = useState(false);
-    const navigate = useNavigate();
+
+    // const handleChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setCustomer((prev) => ({
+    //         ...prev,
+    //         [name]: value
+    //     }));
+    // };
+
+    const resetForm = () => {
+        setCustomer({
+            name: "",
+            phone: "",
+            address: "",
+            city: "",
+            firmName: ""
+        });
+    };
+
+    const handleClose = () => {
+        resetForm();
+        setShowAddCus(false);
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        let updatedValue = value;
+
+        if (name === "phone") {
+            // allow only digits and limit to 10
+            updatedValue = value.replace(/\D/g, "").slice(0, 10);
+        }
+
         setCustomer((prev) => ({
             ...prev,
-            [name]: value
+            [name]: updatedValue
         }));
     };
 
@@ -61,7 +89,8 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                 });
 
                 setTimeout(() => {
-                    navigate("/hisabDiary");
+                    resetForm();
+                    setShowAddCus(false);
                 }, 1000);
             } else {
                 toast.error(result.message || "Failed to add customer. Try again.");
@@ -80,86 +109,96 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
         <div className={`${showAddCus ? "flex" : "hidden"} fixed inset-0 bg-slate-900/60 backdrop-blur-[2px] z-[100] items-center justify-center p-4`}>
 
             {/* Modal Container */}
-            <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
 
 
                 <form onSubmit={handleAddCustomer}>
 
                     {/* Personal Information */}
                     <div className="p-6 sm:p-0">
-                        <div className="flex items-center justify-between gap-2 mb-0 py-4 px-6 border-b border-gray-300">
+                        <div className="flex items-center justify-between gap-2 mb-0 py-4 px-5 border-b border-gray-300">
                             <div className="flex items-center gap-1">
 
-                                <User className="w-5 h-5 text-indigo-600" />
-                                <h2 className="text-lg font-bold text-gray-900">Customer Information</h2>
+                                <User className="w-6.5 h-6.5 text-indigo-600" />
+                                <h1 className="text-2xl font-bold text-gray-900">Customer Information</h1>
                             </div>
+
                             {/* Close Button */}
-                            <button
-                                type="button"
-                                onClick={() => setShowAddCus(false)} // Aapka state false karne ka logic
-                                className=" text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors z-10"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
+                            <div>
+                                <button
+                                    type="button"
+                                    onClick={handleClose} // Aapka state false karne ka logic
+                                    className=" text-white bg-red-400 p-1 cursor-pointer hover:bg-red-600 rounded-full transition-colors z-10"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-5 pt-4 px-6">
-                            <div className="">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    Full Name <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={customer.name}
-                                    onChange={handleChange}
-                                    placeholder="Enter customer's full name"
-                                    className="w-full border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
-                                    required
-                                />
+                        <div className="pt-4 px-6">
+                            <div className="flex items-center gap-2.5 mb-3">
+                                <div className="flex-1">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                        Full Name <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={customer.name}
+                                        onChange={handleChange}
+                                        placeholder="Enter customer's full name"
+                                        className="w-full placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="flex-1">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                        Phone Number <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        value={customer.phone}
+                                        onChange={handleChange}
+                                        placeholder="Enter 10-digit phone number"
+                                        pattern="[0-9]{10}"
+                                        inputMode="numeric"
+                                        maxLength={10}
+                                        className="w-full placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
+                                        required
+                                    />
+                                </div>
                             </div>
 
-                            <div className="">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    Phone Number <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    value={customer.phone}
-                                    onChange={handleChange}
-                                    placeholder="Enter 10-digit phone number"
-                                    className="w-full border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
-                                    required
-                                />
-                            </div>
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex-1">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                        Firm Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="firmName"
+                                        value={customer.firmName}
+                                        onChange={handleChange}
+                                        placeholder="Enter firm name"
+                                        className=" w-full placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
+                                    />
+                                </div>
 
-                            <div className="">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    Firm Name
-                                </label>
-                                <input
-                                    type="text"
-                                    name="firmName"
-                                    value={customer.firmName}
-                                    onChange={handleChange}
-                                    placeholder="Enter firm name"
-                                    className=" w-full border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
-                                />
-                            </div>
-
-                            <div className="">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    City
-                                </label>
-                                <input
-                                    type="text"
-                                    name="city"
-                                    value={customer.city}
-                                    onChange={handleChange}
-                                    placeholder="Enter city"
-                                    className=" w-full border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
-                                />
+                                <div className="flex-1">
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                        City
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="city"
+                                        value={customer.city}
+                                        onChange={handleChange}
+                                        placeholder="Enter city"
+                                        className=" w-full placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
+                                    />
+                                </div>
                             </div>
 
                         </div>
@@ -167,7 +206,7 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
 
                     {/* Address */}
                     <div className="p-6 sm:pt-4 border-b border-gray-200">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
                             Full Address
                         </label>
                         <textarea
@@ -176,8 +215,16 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                             onChange={handleChange}
                             placeholder="Enter complete address with landmarks"
                             rows="3"
-                            className="w-full border-2 border-gray-200 px-4 py-3 rounded-xl outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all resize-none font-medium bg-white"
+                            className="w-full bg-white placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-4 py-2.5 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all resize-none"
                         />
+                        {/* <textarea
+                            name="address"
+                            value={customer.address}
+                            onChange={handleChange}
+                            placeholder="Enter complete address with landmarks"
+                            rows="3"
+                            className="w-full placeholder:text-sm placeholder:text-gray-400 border-2 border-gray-200 px-4 py-3 rounded-xl outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all resize-none bg-white"
+                        /> */}
                     </div>
 
                     {/* Submit Section */}
@@ -188,8 +235,8 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                             </p>
                             <button
                                 type="submit"
-                                disabled={showLoader}
-                                className="flex items-center justify-center gap-2 px-5 py-3 bg-[#6366F1] hover:bg-[#5d60e6] text-white rounded-lg focus:outline-none font-semibold transition-all"
+                                disabled={showLoader || !customer.name.trim() || customer.phone.trim().length !== 10}
+                                className="flex items-center cursor-pointer justify-center gap-2 px-5 py-3 bg-[#6366F1] hover:bg-[#5d60e6] text-white rounded-lg focus:outline-none font-semibold transition-all disabled:opacity-70"
                             >
                                 <Save className="w-5 h-5" />
                                 {showLoader ? "Saving..." : "Save Customer"}
@@ -199,29 +246,6 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                 </form>
             </div>
 
-            <Toaster
-                position="top-right"
-                toastOptions={{
-                    duration: 3000,
-                    style: {
-                        background: '#333',
-                        color: '#fff',
-                        fontWeight: '600',
-                    },
-                    success: {
-                        iconTheme: {
-                            primary: '#10b981',
-                            secondary: '#fff',
-                        },
-                    },
-                    error: {
-                        iconTheme: {
-                            primary: '#ef4444',
-                            secondary: '#fff',
-                        },
-                    },
-                }}
-            />
         </div>
     );
 }
