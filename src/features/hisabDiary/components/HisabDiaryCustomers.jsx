@@ -114,8 +114,8 @@ export default function HisabDiaryCustomers() {
     const formatWeight = (val) => {
         if (!val) return "0.00";
         return Number(val).toLocaleString("en-IN", {
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 3
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
         });
     };
 

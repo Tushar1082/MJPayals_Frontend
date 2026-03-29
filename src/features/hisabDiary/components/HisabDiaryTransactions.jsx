@@ -171,7 +171,7 @@ export default function HisabDiaryTransactions() {
     // ================= FORMATTERS =================
     const formatWeight = (val) => {
         if (!val) return "0.000";
-        return Number(val).toLocaleString("en-IN", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+        return Number(val).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
     const formatCurrency = (val) => {
