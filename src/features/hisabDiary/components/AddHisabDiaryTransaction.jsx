@@ -4,8 +4,9 @@ import { Calendar, Search, Mic, MicOff, Save, Scale, IndianRupee, FileText, Arro
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAddTransaction, preselectedCustomer }) {
+export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAddTransaction, preselectedCustomer, initialData }) {
     const [showLoader, setShowLoader] = useState(false);
+    const [editTransactionId, setEditTransactionId] = useState(null);
 
     // Form States
     const [transactionDate, setTransactionDate] = useState(new Date());
@@ -100,7 +101,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
             recognitionRef.current = new SpeechRecognition();
             recognitionRef.current.continuous = false;
             recognitionRef.current.interimResults = true;
-            recognitionRef.current.lang = 'hi-IN';
+            recognitionRef.current.lang = 'en-IN';
 
             recognitionRef.current.onresult = (event) => {
                 let transcript = "";
@@ -209,8 +210,14 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                 date: apiDate
             };
 
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/hisabDiary/transaction/add`, {
-                method: "POST",
+            const apiMethod = editTransactionId ? "PUT" : "POST";
+            const apiUrl = editTransactionId
+                ? `${import.meta.env.VITE_API_URL}/hisabDiary/transaction/update/${editTransactionId}`
+                : `${import.meta.env.VITE_API_URL}/hisabDiary/transaction/add`;
+
+            // const response = await fetch(`${import.meta.env.VITE_API_URL}/hisabDiary/transaction/add`, {
+            const response = await fetch(apiUrl, {
+                method: apiMethod,
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -220,7 +227,8 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
             const result = await response.json();
 
             if (result.status === "success" || response.ok) {
-                toast.success(`${transactionType === 'N' ? 'Naam' : 'Jama'} Transaction Added Successfully!`);
+                // toast.success(`${transactionType === 'N' ? 'Naam' : 'Jama'} Transaction Added Successfully!`);
+                toast.success(editTransactionId ? "Transaction Updated Successfully!" : "Transaction Added Successfully!");
 
                 // Reset form
                 setSilverInGram("");
@@ -245,11 +253,61 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
         }
     };
 
+    // useEffect(() => {
+    //     if (showAddTransaction) {
+    //         setTransactionDate(new Date());
+    //     }
+    // }, [showAddTransaction]);
+
+    // useEffect(() => {
+    //     if (showAddTransaction) {
+    //         setTransactionDate(new Date());
+
+    //         if (initialData) {
+    //             // Agar plus button dab kar aaye hain toh Jama auto select aur values fill hongi
+    //             setTransactionType("J");
+    //             setSilverInGram(initialData.silverInGram);
+    //             setCash(initialData.cash);
+    //             if (initialData.comment) setComment(initialData.comment);
+    //         } else {
+    //             // Normal "New Transaction" click par default 'Naam' rahega
+    //             setTransactionType("N");
+    //         }
+    //     }
+    // }, [showAddTransaction, initialData]);
+
     useEffect(() => {
         if (showAddTransaction) {
-            setTransactionDate(new Date());
+            if (initialData && initialData.isEdit) {
+                // Edit Mode: Purani values fill karo
+                setEditTransactionId(initialData.id);
+                setTransactionType(initialData.transactionType);
+                setSilverInGram(initialData.silverInGram);
+                setCash(initialData.cash);
+                setComment(initialData.comment);
+                setTransactionDate(initialData.transactionDate);
+            } else if (initialData && !initialData.isEdit) {
+                // Quick Jama Mode (Plus button wala)
+                setEditTransactionId(null);
+                setTransactionType(initialData.transactionType);
+                setSilverInGram(initialData.silverInGram);
+                setCash(initialData.cash);
+                setComment(initialData.comment);
+                setTransactionDate(new Date());
+            } else {
+                // Normal New Transaction
+                setEditTransactionId(null);
+                setTransactionType("N");
+                setSilverInGram("");
+                setCash("");
+                setComment("");
+                setTransactionDate(new Date());
+            }
+        } else {
+            // Jab modal close ho toh reset kar do
+            setEditTransactionId(null);
         }
-    }, [showAddTransaction]);
+    }, [showAddTransaction, initialData]);
 
     return (
         <div className={`${showAddTransaction ? "flex" : "hidden"} fixed inset-0 bg-slate-900/60 backdrop-blur-[2px] z-[100] items-center justify-center p-4 overflow-y-auto`}>
@@ -263,7 +321,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                         <div className="flex items-center justify-between gap-1 mb-0 py-4 px-5 border-b border-gray-300">
                             <div className="flex items-center gap-2 ">
                                 <ArrowLeftRight className="w-6.5 h-6.5 text-indigo-600" />
-                                <h1 className="text-2xl font-bold text-gray-900">New Transaction</h1>
+                                <h1 className="text-2xl font-bold text-gray-900">Add Transaction</h1>
                             </div>
                             <div>
                                 <button
@@ -279,9 +337,9 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 items-center gap-2.5 pt-4 px-6">
+                        <div className="grid grid-cols-3 items-baseline gap-2.5 pt-4 px-6">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">
                                     Transaction Date
                                 </label>
                                 <div className="relative w-full">
@@ -299,14 +357,14 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                             </div>
 
                             <div className="col-span-2">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">
                                     Select Customer <span className="text-red-500">*</span>
                                 </label>
                                 {selectedCustomer ? (
                                     <div className="flex items-center justify-between px-4 py-1 bg-white border-2 border-indigo-300 rounded-xl">
-                                        <div>
-                                            <div className="font-semibold text-gray-900">{selectedCustomer.name}</div>
-                                            <div className="text-sm text-gray-600">{selectedCustomer.phone}</div>
+                                        <div className="flex flex-col">
+                                            <p className="mb-0 font-semibold text-gray-900">{selectedCustomer.name}</p>
+                                            <p className="mb-0 text-sm text-gray-600">{selectedCustomer.phone}</p>
                                         </div>
                                         <button
                                             type="button"
@@ -314,7 +372,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                                 setSelectedCustomer(null);
                                                 setCustomerSearchTerm("");
                                             }}
-                                            className="p-2 hover:bg-red-50 rounded-lg text-red-500 transition-colors"
+                                            className="p-2 hover:bg-red-50 rounded-full text-red-500 transition-colors"
                                         >
                                             <X className="w-5 h-5" />
                                         </button>
@@ -367,7 +425,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                     //     : 'bg-transparent text-gray-500 hover:text-red-500 hover:bg-white/50'
                                     //     }`}
                                     className={`px-6 py-3 font-bold text-sm rounded-t-xl transition-all outline-none ${transactionType === "N"
-                                        ? 'text-white bg-red-600'
+                                        ? 'text-white bg-red-600/80'
                                         : 'bg-transparent text-gray-500 hover:text-red-500 hover:bg-white/50'
                                         }`}
                                 >
@@ -384,12 +442,12 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                     type="button"
                                     onClick={() => setTransactionType("J")}
                                     // className={`relative px-6 py-3 font-bold text-sm rounded-t-xl transition-all ${transactionType === "J"
-                                    //     ? 'bg-white text-emerald-600 shadow-sm border-t-4 border-emerald-500 z-10'
-                                    //     : 'bg-transparent text-gray-500 hover:text-emerald-500 hover:bg-white/50'
+                                    //     ? 'bg-white text-green-600 shadow-sm border-t-4 border-green-500 z-10'
+                                    //     : 'bg-transparent text-gray-500 hover:text-green-500 hover:bg-white/50'
                                     //     }`}
                                     className={`px-6 py-3 font-bold text-sm rounded-t-xl transition-all outline-none ${transactionType === "J"
-                                        ? 'text-white bg-emerald-600'
-                                        : 'bg-transparent text-gray-500 hover:text-emerald-500 hover:bg-white/50'
+                                        ? 'text-white bg-green-600/80'
+                                        : 'bg-transparent text-gray-500 hover:text-green-500 hover:bg-white/50'
                                         }`}
                                 >
                                     <div className="flex items-center gap-2">
@@ -404,13 +462,12 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                         </div>
 
                         {/* Tab Content - Input Fields */}
-                        <div className={`py-5 px-6 mx-4 rounded-tr-[12px] rounded-br-[12px] rounded-bl-[12px] ${transactionType === "N" ? "bg-red-600" : "bg-emerald-600 rounded-tl-[12px]"}`}>
+                        <div className={`py-5 px-6 mx-4 rounded-tr-[12px] rounded-br-[12px] rounded-bl-[12px] ${transactionType === "N" ? "bg-red-500/80" : "bg-green-500/80 rounded-tl-[12px]"}`}>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
                                 {/* Silver Input */}
                                 <div>
-                                    <label className={`block text-sm text-white font-bold mb-2 ${transactionType === 'N' ? 'bg-red-600' : 'bg-emerald-600'
-                                        }`}>
+                                    <label className={`block text-sm text-white font-bold mb-1`}>
                                         <div className="flex items-center gap-2">
                                             Silver Weight (in grams)
                                         </div>
@@ -419,12 +476,10 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                         <input
                                             type="number"
                                             placeholder="e.g. 150.500"
+                                            min={0}
                                             value={silverInGram}
                                             onChange={(e) => setSilverInGram(e.target.value)}
-                                            className={`w-full text-white border placeholder:text-white/50 border-gray-300 px-4 py-2.5 rounded-lg outline-none ${transactionType === 'N'
-                                                ? 'border-red-200 focus:ring-red-300 focus:border-red-400 bg-red-50/30'
-                                                : 'border-emerald-200 focus:ring-emerald-300 focus:border-emerald-400 bg-emerald-50/30'
-                                                }`}
+                                            className={`w-full border placeholder:text-grey-400 border-gray-300 px-4 py-2.5 rounded-lg outline-none bg-white`}
                                         />
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 font-bold text-sm">g</span>
                                     </div>
@@ -432,22 +487,19 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
 
                                 {/* Cash Input */}
                                 <div>
-                                    <label className={`block text-sm text-white font-bold mb-2 ${transactionType === 'N' ? 'bg-red-600' : 'bg-emerald-600'
-                                        }`}>
+                                    <label className={`block text-sm text-white font-bold mb-1`}>
                                         <div className="flex items-center gap-2">
-                                            Cash Amount
+                                            Amount
                                         </div>
                                     </label>
                                     <div className="relative">
                                         <input
                                             type="number"
+                                            min={0}
                                             placeholder="e.g. 11,287.50"
                                             value={cash}
                                             onChange={(e) => setCash(e.target.value)}
-                                            className={`w-full text-white placeholder:text-white/50 border border-gray-300 px-4 py-2.5 rounded-lg outline-none ${transactionType === 'N'
-                                                ? 'border-red-200 focus:ring-red-300 focus:border-red-400 bg-red-50/30'
-                                                : 'border-emerald-200 focus:ring-emerald-300 focus:border-emerald-400 bg-emerald-50/30'
-                                                }`}
+                                            className={`w-full placeholder:text-grey-400 border border-gray-300 px-4 py-2.5 rounded-lg outline-none bg-white`}
                                         />
                                     </div>
                                 </div>
@@ -455,7 +507,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
 
                             {/* Comment Section with Voice */}
                             <div className="mt-3.5">
-                                <label className="block text-sm font-semibold text-white mb-2">
+                                <label className="block text-sm font-semibold text-white mb-1">
                                     <div className="flex items-center justify-between">
                                         <span>Comments / Remarks</span>
                                     </div>
@@ -466,10 +518,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                         placeholder="Enter additional details or use voice input..."
                                         value={comment}
                                         onChange={(e) => setComment(e.target.value)}
-                                        className={`w-full text-white placeholder:text-white/50 border border-white px-4 py-3 pr-14 rounded-xl outline-none transition-all resize-none ${transactionType === 'N'
-                                            ? 'border-red-200 focus:ring-red-300 focus:border-red-400 bg-red-50/30'
-                                            : 'border-emerald-200 focus:ring-emerald-300 focus:border-emerald-400 bg-emerald-50/30'
-                                            }`}
+                                        className={`w-full bg-white placeholder:text-grey-400 border border-white px-4 py-3 pr-14 rounded-xl outline-none transition-all resize-none`}
                                     />
                                     <button
                                         type="button"
@@ -483,17 +532,13 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                                 ? 'bg-gray-700 text-white' // active (stop state)
                                                 : transactionType === 'N'
                                                     ? 'bg-gradient-to-br from-red-100 to-red-200 text-red-600 hover:from-red-200 hover:to-red-300'
-                                                    : 'bg-gradient-to-br from-emerald-100 to-emerald-200 text-emerald-600 hover:from-emerald-200 hover:to-emerald-300'
+                                                    : 'bg-gradient-to-br from-green-100 to-green-200 text-green-600 hover:from-green-200 hover:to-green-300'
                                             }`}
                                         title={isRecording ? "Recording... Click to stop" : "Voice input (Hindi & English)"}
                                     >
                                         {isRecording ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
                                     </button>
                                 </div>
-                                <p className="text-xs text-white mt-1 mb-2 flex items-center gap-1.5">
-                                    <span className="inline-block w-2 h-2 bg-indigo-400 rounded-full"></span>
-                                    Voice input supports Hindi & English
-                                </p>
                             </div>
                         </div>
 
@@ -509,19 +554,15 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                         disabled={showLoader || !silverInGram || !cash || !selectedCustomer}
                                         className={`w-full sm:w-auto px-8 py-3.5 font-bold flex items-center justify-center gap-3 rounded-xl shadow-lg transition-all ${transactionType === 'N'
                                             ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-red-200 disabled:from-red-300 disabled:to-red-400'
-                                            : 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-emerald-200 disabled:from-emerald-300 disabled:to-emerald-400'
+                                            : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-green-200 disabled:from-green-300 disabled:to-green-400'
                                             } disabled:cursor-not-allowed hover:shadow-xl`}
                                     > */}
                                 <button
                                     type="submit"
-                                    disabled={showLoader || !selectedCustomer}
-                                    className={`w-full sm:w-auto px-5 py-3 font-bold flex items-center justify-center gap-3 rounded-lg transition-all ${transactionType === 'N'
-                                        ? 'bg-red-600 hover:bg-red-700 text-white disabled:bg-red-300'
-                                        : 'bg-emerald-600 hover:bg-emerald-700 text-white disabled:bg-emerald-300'
-                                        } disabled:cursor-not-allowed`}
+                                    disabled={showLoader || !selectedCustomer || !(cash || silverInGram) }
+                                    className={`w-full sm:w-auto px-5 py-3 flex items-center justify-center gap-3 rounded-lg transition-all bg-[#6366F1] hover:bg-[#5d60e6] font-semibold text-white disabled:opacity-70`}
                                 >
-                                    <Save className="w-5 h-5" />
-                                    {showLoader ? "Saving..." : `Save ${transactionType === 'N' ? 'Naam' : 'Jama'} Entry`}
+                                    Submit
                                 </button>
                             </div>
                         </div>

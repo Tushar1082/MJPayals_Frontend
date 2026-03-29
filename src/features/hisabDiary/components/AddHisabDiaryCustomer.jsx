@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
-import { UserPlus, Save, ArrowLeft, User, Phone, Building2, MapPin, Home, X } from "lucide-react";
+import { User, X } from "lucide-react";
 
 export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
     const [customer, setCustomer] = useState({
@@ -55,12 +55,12 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
         e.preventDefault();
 
         if (!customer.name.trim() || !customer.phone.trim()) {
-            toast.error("Name and Phone Number are required!");
+            toast.error("Name and Mobile Number are required!");
             return;
         }
 
         if (customer.phone.trim().length < 10) {
-            toast.error("Please enter a valid phone number!");
+            toast.error("Please enter a valid Mobile Number!");
             return;
         }
 
@@ -120,7 +120,7 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                             <div className="flex items-center gap-1">
 
                                 <User className="w-6.5 h-6.5 text-indigo-600" />
-                                <h1 className="text-2xl font-bold text-gray-900">Customer Information</h1>
+                                <h1 className="text-2xl font-bold text-gray-900">Add Customer</h1>
                             </div>
 
                             {/* Close Button */}
@@ -154,14 +154,14 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
 
                                 <div className="flex-1">
                                     <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                        Phone Number <span className="text-red-500">*</span>
+                                        Mobile Number <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="tel"
                                         name="phone"
                                         value={customer.phone}
                                         onChange={handleChange}
-                                        placeholder="Enter 10-digit phone number"
+                                        placeholder="Enter 10-digit mobile number"
                                         pattern="[0-9]{10}"
                                         inputMode="numeric"
                                         maxLength={10}
@@ -238,8 +238,7 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                                 disabled={showLoader || !customer.name.trim() || customer.phone.trim().length !== 10}
                                 className="flex items-center cursor-pointer justify-center gap-2 px-5 py-3 bg-[#6366F1] hover:bg-[#5d60e6] text-white rounded-lg focus:outline-none font-semibold transition-all disabled:opacity-70"
                             >
-                                <Save className="w-5 h-5" />
-                                {showLoader ? "Saving..." : "Save Customer"}
+                                Submit
                             </button>
                         </div>
                     </div>
