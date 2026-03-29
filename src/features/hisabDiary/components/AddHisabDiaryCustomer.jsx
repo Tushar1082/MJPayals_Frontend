@@ -115,12 +115,12 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                 <form onSubmit={handleAddCustomer}>
 
                     {/* Personal Information */}
-                    <div className="p-6 sm:p-0">
-                        <div className="flex items-center justify-between gap-2 mb-0 py-4 px-5 border-b border-gray-300">
-                            <div className="flex items-center gap-1">
+                    <div className="p-0">
+                        <div className="flex items-center justify-between gap-2 mb-0 px-4 py-3 sm:py-4 sm:px-5 border-b border-gray-300">
+                            <div className="flex items-start sm:items-center gap-1">
 
                                 <User className="w-6.5 h-6.5 text-indigo-600" />
-                                <h1 className="text-2xl font-bold text-gray-900">Add Customer</h1>
+                                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Add Customer</h1>
                             </div>
 
                             {/* Close Button */}
@@ -135,8 +135,8 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                             </div>
                         </div>
 
-                        <div className="pt-4 px-6">
-                            <div className="flex items-center gap-2.5 mb-3">
+                        <div className="pt-4 px-4 sm:px-6">
+                            <div className="flex items-center gap-2 sm:gap-2.5 mb-3">
                                 <div className="flex-1">
                                     <label className="block text-sm font-semibold text-gray-700 mb-1">
                                         Full Name <span className="text-red-500">*</span>
@@ -147,7 +147,7 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                                         value={customer.name}
                                         onChange={handleChange}
                                         placeholder="Enter customer's full name"
-                                        className="w-full placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
+                                        className="w-full text-sm sm:text-lg placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-3 sm:px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
                                         required
                                     />
                                 </div>
@@ -165,13 +165,13 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                                         pattern="[0-9]{10}"
                                         inputMode="numeric"
                                         maxLength={10}
-                                        className="w-full placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
+                                        className="w-full text-sm sm:text-lg placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-3 sm:px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
                                         required
                                     />
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2.5">
+                            <div className="flex items-center gap-2 sm:gap-2.5">
                                 <div className="flex-1">
                                     <label className="block text-sm font-semibold text-gray-700 mb-1">
                                         Firm Name
@@ -182,7 +182,7 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                                         value={customer.firmName}
                                         onChange={handleChange}
                                         placeholder="Enter firm name"
-                                        className=" w-full placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
+                                        className=" w-full text-sm sm:text-lg placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-3 sm:px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
                                     />
                                 </div>
 
@@ -196,7 +196,7 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                                         value={customer.city}
                                         onChange={handleChange}
                                         placeholder="Enter city"
-                                        className=" w-full placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
+                                        className=" w-full text-sm sm:text-lg placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-3 sm:px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
                                     />
                                 </div>
                             </div>
@@ -205,7 +205,7 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                     </div>
 
                     {/* Address */}
-                    <div className="p-6 sm:pt-4 border-b border-gray-200">
+                    <div className="sm:p-6 p-4 py-3 sm:py-4 border-b border-gray-200">
                         <label className="block text-sm font-semibold text-gray-700 mb-1">
                             Full Address
                         </label>
@@ -215,7 +215,7 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                             onChange={handleChange}
                             placeholder="Enter complete address with landmarks"
                             rows="3"
-                            className="w-full bg-white placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-4 py-2.5 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all resize-none"
+                            className="w-full text-sm sm:text-lg bg-white placeholder:text-sm placeholder:text-gray-400 border border-gray-300 px-3 sm:px-4 py-2.5 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all resize-none"
                         />
                         {/* <textarea
                             name="address"
@@ -228,15 +228,15 @@ export default function AddHisabDiaryCustomer({ showAddCus, setShowAddCus }) {
                     </div>
 
                     {/* Submit Section */}
-                    <div className="py-2.5 px-6 bg-gray-50">
-                        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                    <div className="py-2.5 px-4 sm:px-6 bg-gray-50">
+                        <div className="flex flex-row gap-4 items-center justify-between">
                             <p className="text-sm text-gray-600">
                                 Fields marked with <span className="text-red-500 font-bold">*</span> are required
                             </p>
                             <button
                                 type="submit"
                                 disabled={showLoader || !customer.name.trim() || customer.phone.trim().length !== 10}
-                                className="flex items-center cursor-pointer justify-center gap-2 px-5 py-3 bg-[#6366F1] hover:bg-[#5d60e6] text-white rounded-lg focus:outline-none font-semibold transition-all disabled:opacity-70"
+                                className="flex items-center cursor-pointer justify-center gap-2 px-5 py-2 sm:py-3 bg-[#6366F1] hover:bg-[#5d60e6] text-white rounded-lg focus:outline-none font-semibold transition-all disabled:opacity-70"
                             >
                                 Submit
                             </button>

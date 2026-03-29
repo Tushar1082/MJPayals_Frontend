@@ -162,7 +162,7 @@ export default function HisabDiaryCustomers() {
                     <div className="max-w-[1600px] mx-auto">
 
                         {/* Header Section */}
-                        <div className="mb-6 sm:mb-4">
+                        <div className="mb-4">
                             <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
                                 <div className="text-left">
                                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
@@ -172,42 +172,115 @@ export default function HisabDiaryCustomers() {
                             </div>
 
                             {/* Search Bar */}
-                            <div className="flex gap-4 mt-4 shadow-[0_1px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] justify-between items-center p-4 bg-white rounded-lg">
-                                <div className="flex-1">
+                            <div className="flex flex-col sm:flex-row gap-2 md:gap-4 mt-4 shadow-[0_1px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] justify-between items-start sm:items-center p-[10px] sm:p-4 bg-white rounded-lg">
+                                <div className="flex-1 w-full sm:w-auto">
                                     <div className="relative flex-1">
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                        <Search className="absolute left-[10px] sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                                         <input
                                             type="text"
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                                             placeholder="Search by name, phone or firm..."
-                                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            className="w-full pl-[1.9rem] placeholder:text-xs sm:placeholder:text-[16px] sm:pl-10 pr-4 py-1.5 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         />
                                     </div>
                                 </div>
-                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                <div className="flex items-stretch sm:items-center gap-1 sm:gap-3">
                                     <button
                                         onClick={() => setShowAddCus(true)}
-                                        className="flex items-center justify-center gap-2 px-5 py-3 bg-[#6366F1] hover:bg-[#5d60e6] text-white rounded-lg focus:outline-none font-semibold transition-all"
+                                        className="flex items-center justify-center gap-2 px-5 py-[10px] sm:py-3 text-xs sm:text-[16px] bg-[#6366F1] hover:bg-[#5d60e6] text-white rounded-lg focus:outline-none font-semibold transition-all"
                                     >
-                                        <UserPlus className="w-5 h-5" />
+                                        <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
                                         <span>Add Customer</span>
                                     </button>
                                     <button
                                         onClick={() => setShowAddTransaction(true)}
-                                        className="flex items-center justify-center gap-2 px-5 py-3 bg-black hover:bg-black/80 text-white rounded-lg focus:outline-none font-semibold transition-all"
+                                        className="flex items-center justify-center gap-2 px-5 py-[10px] sm:py-3 text-xs sm:text-[16px] bg-black hover:bg-black/80 text-white rounded-lg focus:outline-none font-semibold transition-all"
                                     >
-                                        <ArrowLeftRight className="w-5 h-5" />
+                                        <ArrowLeftRight className="w-4 h-4 sm:w-5 sm:h-5" />
                                         <span>New Transaction</span>
                                     </button>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Customers Table View */}
-                        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden mb-6">
-                            <div className="overflow-x-auto">
+                        {/* Customers Table & Mobile Card View */}
+                        <div className="border border-gray-200 rounded-lg shadow-sm overflow-hidden mb-6 bg-transparent sm:bg-white sm:border-solid border-none">
+
+                            {/* ================= MOBILE VIEW (CARDS) ================= */}
+                            <div className="grid grid-cols-1 gap-2 sm:gap-4 lg:hidden p-0 sm:p-4">
+                                {customers.length > 0 ? (
+                                    customers.map((cus) => {
+                                        const TotalNaamSilver = cus.totalNaamSilver || 0;
+                                        const TotalNaamCash = cus.totalNaamCash || 0;
+                                        const TotalJamaSilver = cus.totalJamaSilver || 0;
+                                        const TotalJamaCash = cus.totalJamaCash || 0;
+                                        const balanceSilver = TotalNaamSilver - TotalJamaSilver;
+                                        const balanceCash = TotalNaamCash - TotalJamaCash;
+
+                                        return (
+                                            <div key={cus.id} onClick={() => handleViewTransactions(cus.id)} className="bg-white rounded-xl border border-gray-200 shadow-sm pt-[10px] pb-[12px] px-4 sm:p-4 relative cursor-pointer active:scale-[0.98] transition-all">
+                                                {/* Header: Name, Firm, Phone & Actions */}
+                                                <div className="flex justify-between items-start border-b border-gray-100 pb-3 mb-0 sm:mb-3">
+                                                    <div className="pr-2">
+                                                        <span className="text-lg font-semibold text-gray-900 capitalize block leading-tight">{cus.name}</span>
+                                                        <div className="flex items-center gap-1 mt-1.5">
+                                                            {cus.phone && <span className="text-xs text-gray-500 flex items-center gap-1"><Phone className="w-3.5 h-3.5" /> {cus.phone}</span>}
+                                                            {cus.firmName && <span className="text-xs text-gray-500 flex items-center gap-1"><Building2 className="w-3.5 h-3.5" /> {cus.firmName}</span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-2 shrink-0">
+                                                        <button onClick={(e) => { e.stopPropagation(); handleViewTransactions(cus.id); }} className="p-2 bg-[#6366F1] hover:bg-[#5c5fe3] text-white rounded-lg"><Eye className="w-4 h-4" /></button>
+                                                        <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ show: true, customerId: cus.id }); }} className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"><Trash2 className="w-4 h-4" /></button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Body: Naam, Jama, Balance Grid */}
+                                                <div className="grid grid-cols-3 gap-2 mt-1">
+                                                    <div className="text-center">
+                                                        <div className="text-[10px] text-gray-400 font-bold uppercase mb-1">Naam</div>
+                                                        <div className="flex flex-col items-center">
+                                                            {TotalNaamSilver > 0 && <span className="text-xs font-bold text-red-600">{formatWeight(TotalNaamSilver)}g</span>}
+                                                            {TotalNaamCash > 0 && <span className="text-xs font-bold text-red-600">{formatCurrency(TotalNaamCash)}</span>}
+                                                            {TotalNaamSilver === 0 && TotalNaamCash === 0 && <span className="text-xs font-bold text-gray-400">—</span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-center border-l border-gray-100">
+                                                        <div className="text-[10px] text-gray-400 font-bold uppercase mb-1">Jama</div>
+                                                        <div className="flex flex-col items-center">
+                                                            {TotalJamaSilver > 0 && <span className="text-xs font-bold text-green-600">{formatWeight(TotalJamaSilver)}g</span>}
+                                                            {TotalJamaCash > 0 && <span className="text-xs font-bold text-green-600">{formatCurrency(TotalJamaCash)}</span>}
+                                                            {TotalJamaSilver === 0 && TotalJamaCash === 0 && <span className="text-xs font-bold text-gray-400">—</span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-center border-l border-gray-100">
+                                                        <div className="text-[10px] text-gray-400 font-bold uppercase mb-1">Net Balance</div>
+                                                        <div className="flex flex-col items-center">
+                                                            {balanceSilver !== 0 && <span className={`text-xs font-bold ${balanceSilver > 0 ? 'text-red-600' : 'text-green-600'}`}>{formatWeight(Math.abs(balanceSilver))}g</span>}
+                                                            {balanceCash !== 0 && <span className={`text-xs font-bold ${balanceCash > 0 ? 'text-red-600' : 'text-green-600'}`}>{formatCurrency(Math.abs(balanceCash))}</span>}
+                                                            {balanceSilver === 0 && balanceCash === 0 && <span className="text-xs font-bold text-gray-400">0.00</span>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    !showLoader && (
+                                        <div className="py-12 bg-white rounded-xl border border-gray-200 text-center flex flex-col items-center justify-center">
+                                            <div className="w-14 h-14 bg-indigo-50 rounded-full flex items-center justify-center mb-3">
+                                                <Users className="w-7 h-7 text-indigo-400" />
+                                            </div>
+                                            <h3 className="text-base font-bold text-gray-900 mb-1">No customers found</h3>
+                                            <p className="text-gray-500 text-xs px-4">You haven't added any customers yet.</p>
+                                        </div>
+                                    )
+                                )}
+                            </div>
+
+                            {/* Customers Table View */}
+                            <div className="hidden lg:block overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="bg-gray-50 border-b border-gray-200">
@@ -244,7 +317,7 @@ export default function HisabDiaryCustomers() {
                                                         <td className="pr-6 pl-8 py-4 ">{idx + 1}.</td>
                                                         <td className="px-6 py-4">
                                                             <div className="flex flex-col">
-                                                                <span className="text-sm font-bold text-gray-900 capitalize mb-1">
+                                                                <span className="text-sm font-semibold text-gray-900 capitalize mb-1">
                                                                     {cus.name}
                                                                 </span>
                                                                 <div className="flex items-center gap-3 text-xs text-gray-500">
@@ -399,6 +472,7 @@ export default function HisabDiaryCustomers() {
                                     </tbody>
                                 </table>
                             </div>
+
                         </div>
 
                         {/* Infinite Scroll Loader */}
@@ -422,7 +496,7 @@ export default function HisabDiaryCustomers() {
 
                 {/* Footer */}
                 <div className="text-center mt-0 py-6">
-                    <h1 className="text-[#6366F1] text-lg font-semibold uppercase">
+                    <h1 className="text-[#6366F1] text-md sm:text-lg font-semibold uppercase">
                         Design & Developed by ATF Labs
                     </h1>
                 </div>

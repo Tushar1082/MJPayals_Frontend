@@ -17,6 +17,7 @@ export default function HisabDiaryTransactions() {
     const [summary, setSummary] = useState(null);
     const [totalRecords, setTotalRecords] = useState(0);
     const [isSendingWa, setIsSendingWa] = useState(false);
+    const [commentModal, setCommentModal] = useState({ show: false, text: "" });
 
     // Modals State
     const [deleteModal, setDeleteModal] = useState({ show: false, transactionId: null });
@@ -203,7 +204,7 @@ export default function HisabDiaryTransactions() {
                     <div className="max-w-[1600px] mx-auto">
 
                         {/* Top Navigation & Actions */}
-                        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
                                 <button
                                     onClick={() => navigate("/hisabDiary")}
@@ -212,28 +213,26 @@ export default function HisabDiaryTransactions() {
                                     <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
                                     Back
                                 </button>
-                                <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
                                     Transaction History
                                 </h1>
                             </div>
-                            <div className="flex flex-col whitespace-nowrap sm:flex-row items-stretch sm:items-center gap-3">
-                                {/* PURANA NEW TRANSACTION BUTTON */}
+                            <div className="flex whitespace-nowrap sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                                 <button
                                     onClick={() => setShowAddTransaction(true)}
-                                    className="flex items-center justify-center gap-2 px-5 py-3 bg-black hover:bg-black/80 text-white rounded-lg focus:outline-none font-semibold transition-all"
+                                    className="flex text-xs sm:text-[16px] items-center justify-center gap-2 px-5 py-[9px] sm:py-3 bg-black hover:bg-black/80 text-white rounded-lg focus:outline-none font-semibold transition-all"
                                 >
-                                    <ArrowLeftRight className="w-5 h-5" />
+                                    <ArrowLeftRight className="w-4 h-4 sm:w-5 sm:h-5" />
                                     <span className="">New Transaction</span>
                                 </button>
 
-                                {/* NAYA WHATSAPP BUTTON */}
                                 <button
                                     onClick={handleSendWhatsApp}
                                     disabled={isSendingWa}
-                                    className="flex items-center justify-center gap-2 px-5 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg focus:outline-none font-semibold transition-all disabled:opacity-70"
+                                    className="flex text-xs sm:text-[16px] items-center justify-center gap-2 px-5 py-[9px] sm:py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg focus:outline-none font-semibold transition-all disabled:opacity-70"
                                     title="Send report to configured WhatsApp number"
                                 >
-                                    <svg fill="white" width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" stroke=""><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M11.42 9.49c-.19-.09-1.1-.54-1.27-.61s-.29-.09-.42.1-.48.6-.59.73-.21.14-.4 0a5.13 5.13 0 0 1-1.49-.92 5.25 5.25 0 0 1-1-1.29c-.11-.18 0-.28.08-.38s.18-.21.28-.32a1.39 1.39 0 0 0 .18-.31.38.38 0 0 0 0-.33c0-.09-.42-1-.58-1.37s-.3-.32-.41-.32h-.4a.72.72 0 0 0-.5.23 2.1 2.1 0 0 0-.65 1.55A3.59 3.59 0 0 0 5 8.2 8.32 8.32 0 0 0 8.19 11c.44.19.78.3 1.05.39a2.53 2.53 0 0 0 1.17.07 1.93 1.93 0 0 0 1.26-.88 1.67 1.67 0 0 0 .11-.88c-.05-.07-.17-.12-.36-.21z"></path><path d="M13.29 2.68A7.36 7.36 0 0 0 8 .5a7.44 7.44 0 0 0-6.41 11.15l-1 3.85 3.94-1a7.4 7.4 0 0 0 3.55.9H8a7.44 7.44 0 0 0 5.29-12.72zM8 14.12a6.12 6.12 0 0 1-3.15-.87l-.22-.13-2.34.61.62-2.28-.14-.23a6.18 6.18 0 0 1 9.6-7.65 6.12 6.12 0 0 1 1.81 4.37A6.19 6.19 0 0 1 8 14.12z"></path></g></svg>
+                                    <svg className="w-5 sm:h-5" fill="white" width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" stroke=""><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M11.42 9.49c-.19-.09-1.1-.54-1.27-.61s-.29-.09-.42.1-.48.6-.59.73-.21.14-.4 0a5.13 5.13 0 0 1-1.49-.92 5.25 5.25 0 0 1-1-1.29c-.11-.18 0-.28.08-.38s.18-.21.28-.32a1.39 1.39 0 0 0 .18-.31.38.38 0 0 0 0-.33c0-.09-.42-1-.58-1.37s-.3-.32-.41-.32h-.4a.72.72 0 0 0-.5.23 2.1 2.1 0 0 0-.65 1.55A3.59 3.59 0 0 0 5 8.2 8.32 8.32 0 0 0 8.19 11c.44.19.78.3 1.05.39a2.53 2.53 0 0 0 1.17.07 1.93 1.93 0 0 0 1.26-.88 1.67 1.67 0 0 0 .11-.88c-.05-.07-.17-.12-.36-.21z"></path><path d="M13.29 2.68A7.36 7.36 0 0 0 8 .5a7.44 7.44 0 0 0-6.41 11.15l-1 3.85 3.94-1a7.4 7.4 0 0 0 3.55.9H8a7.44 7.44 0 0 0 5.29-12.72zM8 14.12a6.12 6.12 0 0 1-3.15-.87l-.22-.13-2.34.61.62-2.28-.14-.23a6.18 6.18 0 0 1 9.6-7.65 6.12 6.12 0 0 1 1.81 4.37A6.19 6.19 0 0 1 8 14.12z"></path></g></svg>
                                     <span className="whitespace-nowrap">{isSendingWa ? "Sending..." : "Send Report"}</span>
                                 </button>
 
@@ -249,11 +248,11 @@ export default function HisabDiaryTransactions() {
 
                         {/* Customer Profile Header */}
                         {customerInfo && summary && (
-                            <div className="bg-white rounded-xl shadow-[0_1px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] border border-gray-200 px-6 py-4 mb-6">
-                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                            <div className="bg-white rounded-xl shadow-[0_1px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] border border-gray-200 p-4 sm:px-6 py-4 mb-4 sm:mb-6">
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-8 items-center">
                                     <div className="lg:col-span-5 flex items-center gap-5">
                                         <div>
-                                            <h2 className="text-2xl font-bold text-gray-900 capitalize leading-tight">
+                                            <h2 className="text-2xl font-semibold sm:font-bold text-gray-900 capitalize leading-tight">
                                                 {customerInfo.name}
                                             </h2>
                                             <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-gray-500 text-sm">
@@ -263,7 +262,7 @@ export default function HisabDiaryTransactions() {
                                         </div>
                                     </div>
 
-                                    <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
                                         <div className="px-4 py-2 rounded-xl bg-gray-50 border border-gray-200">
                                             <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Net Balance</p>
                                             {summary.netSilver !== 0 && summary.netCash !== 0 ? (
@@ -310,8 +309,86 @@ export default function HisabDiaryTransactions() {
                         )}
 
                         {/* Data Table */}
-                        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden mb-6">
-                            <div className="overflow-x-auto">
+                        <div className="border border-gray-200 rounded-lg shadow-sm overflow-hidden mb-6 bg-transparent md:bg-white md:border-solid border-none">                            {/* ================= MOBILE VIEW (CARDS) ================= */}
+                            {/* ============== Mobile View ====================== */}
+                            <div className="grid grid-cols-1 gap-2 sm:gap-4 md:hidden p-0 sm:p-4">
+                                {transactions.length > 0 ? (
+                                    transactions.map((txn) => {
+                                        const isNaam = txn.transactionType === "N";
+                                        const silver = Number(txn.silverInGram || 0);
+                                        const cash = Number(txn.cash || 0);
+
+                                        return (
+                                            <div key={txn.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 relative">
+                                                {/* Header: Date, Comment & Actions */}
+                                                <div className="flex justify-between items-start border-b border-gray-100 pb-3 mb-3">
+                                                    <div className="pr-3">
+                                                        <div className="text-sm font-bold text-gray-800">
+                                                            {new Date(txn.transactionDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                        </div>
+                                                        {txn.comment ? (
+                                                            <div
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setCommentModal({ show: true, text: txn.comment });
+                                                                }}
+                                                                className="text-xs text-gray-600 mt-1.5 leading-relaxed line-clamp-2 cursor-pointer hover:text-indigo-600 transition-colors"
+                                                                title="Tap to read full comment"
+                                                            >
+                                                                {txn.comment}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-xs text-gray-400 italic mt-1.5">No comment</div>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5 shrink-0">
+                                                        {isNaam && (
+                                                            <button onClick={() => handleQuickJama(txn)} className="p-1.5 bg-green-500 text-white hover:bg-green-600 rounded-md transition-colors"><Plus className="w-[20px] h-[20px]" /></button>
+                                                        )}
+                                                        <button onClick={() => handleEdit(txn)} className="p-1.5 bg-[#000000cc] text-white hover:bg-black rounded-md transition-colors"><PenLine className="w-[20px] h-[20px]" /></button>
+                                                        <button onClick={() => setDeleteModal({ show: true, transactionId: txn.id })} className="p-1.5 bg-red-600 text-white hover:bg-red-700 rounded-md transition-colors"><Trash2 className="w-[20px] h-[20px]" /></button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Body: Naam & Jama Grid */}
+                                                <div className="grid grid-cols-2 gap-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                                                    <div>
+                                                        <div className="text-[10px] text-gray-400 font-bold uppercase mb-1">Naam</div>
+                                                        {isNaam ? (
+                                                            <div className="flex flex-col gap-0">
+                                                                {silver > 0 && <span className="text-sm font-bold text-red-600">{formatWeight(silver)} g</span>}
+                                                                {cash > 0 && <span className="text-sm font-bold text-red-600">{formatCurrency(cash)}</span>}
+                                                            </div>
+                                                        ) : <span className="text-gray-300 font-bold">—</span>}
+                                                    </div>
+                                                    <div className="text-right border-l border-gray-400 pl-3">
+                                                        <div className="text-[10px] text-gray-400 font-bold uppercase mb-1">Jama</div>
+                                                        {!isNaam ? (
+                                                            <div className="flex flex-col items-end gap-0">
+                                                                {silver > 0 && <span className="text-sm font-bold text-green-600">{formatWeight(silver)} g</span>}
+                                                                {cash > 0 && <span className="text-sm font-bold text-green-600">{formatCurrency(cash)}</span>}
+                                                            </div>
+                                                        ) : <span className="text-gray-300 font-bold">—</span>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    !showLoader && (
+                                        <div className="py-12 bg-white rounded-xl border border-gray-200 text-center flex flex-col items-center justify-center">
+                                            <div className="w-14 h-14 bg-indigo-50 rounded-full flex items-center justify-center mb-3">
+                                                <FileText className="w-7 h-7 text-indigo-400" />
+                                            </div>
+                                            <h3 className="text-base font-bold text-gray-900 mb-1">No entries found</h3>
+                                            <p className="text-gray-500 text-xs px-4">Start by adding a transaction for this customer.</p>
+                                        </div>
+                                    )
+                                )}
+                            </div>
+
+                            {/* ================= DESKTOP VIEW (TABLE) ================= */}
+                            <div className="hidden md:block overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="bg-gray-50 border-b border-gray-200">
@@ -460,7 +537,7 @@ export default function HisabDiaryTransactions() {
 
                 {/* Footer */}
                 <div className="text-center mt-8 py-6">
-                    <h1 className="text-[#6366F1] text-lg font-semibold uppercase">
+                    <h1 className="text-[#6366F1] text-md sm:text-lg font-semibold uppercase">
                         Design & Developed by ATF Labs
                     </h1>
                 </div>
@@ -477,6 +554,34 @@ export default function HisabDiaryTransactions() {
                 cancelText="Cancel"
                 variant="danger"
             />
+
+            {commentModal.show && (
+                <div
+                    className="fixed inset-0 bg-slate-900/60 backdrop-blur-[2px] flex items-center justify-center z-[110] p-4"
+                    onClick={() => setCommentModal({ show: false, text: "" })}
+                >
+                    <div
+                        className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-0 border border-gray-200 animate-in fade-in zoom-in-95 duration-200"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="flex justify-between items-center mb-0 border-b border-gray-100 py-2 px-4">
+                            <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-indigo-500" />
+                                Comment Note
+                            </h3>
+                            <button
+                                onClick={() => setCommentModal({ show: false, text: "" })}
+                                className="text-white bg-red-400 hover:bg-red-500 p-1.5 rounded-full transition-colors"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed max-h-60 overflow-y-auto py-2 px-4 pb-4">
+                            {commentModal.text}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <Toaster position="top-right" toastOptions={{ style: { pointerEvents: "none", fontWeight: '600' } }} />
         </div>

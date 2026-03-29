@@ -318,10 +318,10 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                 <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
 
                     <form onSubmit={handleAddTransaction}>
-                        <div className="flex items-center justify-between gap-1 mb-0 py-4 px-5 border-b border-gray-300">
-                            <div className="flex items-center gap-2 ">
+                        <div className="flex items-center justify-between gap-1 mb-0 px-4 py-3 sm:py-4 sm:px-5 border-b border-gray-300">
+                            <div className="flex items-start sm:items-center gap-1 ">
                                 <ArrowLeftRight className="w-6.5 h-6.5 text-indigo-600" />
-                                <h1 className="text-2xl font-bold text-gray-900">Add Transaction</h1>
+                                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Add Transaction</h1>
                             </div>
                             <div>
                                 <button
@@ -337,10 +337,10 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 items-baseline gap-2.5 pt-4 px-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 items-baseline gap-2 sm:gap-2.5 pt-4 px-4 sm:px-6">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                    Transaction Date
+                                    Transaction Date <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative w-full">
                                     <DatePicker
@@ -348,7 +348,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                         onChange={(date) => setTransactionDate(date)}
                                         dateFormat="dd/MM/yyyy" /* Ye fixed format dega jo Indians use karte hain */
                                         maxDate={new Date()} /* Aaj se aage ki date block karne ke liye */
-                                        className="w-full border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all bg-white cursor-pointer"
+                                        className="w-full border border-gray-300 placeholder:text-sm text-sm sm:text-lg px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all bg-white cursor-pointer"
                                         wrapperClassName="w-full"
                                     />
                                     {/* Calendar Icon for visual cue */}
@@ -356,15 +356,15 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                 </div>
                             </div>
 
-                            <div className="col-span-2">
+                            <div className="sm:col-span-2">
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                                     Select Customer <span className="text-red-500">*</span>
                                 </label>
                                 {selectedCustomer ? (
-                                    <div className="flex items-center justify-between px-4 py-1 bg-white border-2 border-indigo-300 rounded-xl">
+                                    <div className="flex items-center justify-between px-3 sm:px-4 py-1 bg-white border-2 border-indigo-300 rounded-xl">
                                         <div className="flex flex-col">
-                                            <p className="mb-0 font-semibold text-gray-900">{selectedCustomer.name}</p>
-                                            <p className="mb-0 text-sm text-gray-600">{selectedCustomer.phone}</p>
+                                            <p className="mb-0 text-sm sm:text-lg font-semibold text-gray-900">{selectedCustomer.name}</p>
+                                            <p className="mb-0 text-xs sm:text-sm text-gray-600">{selectedCustomer.phone}</p>
                                         </div>
                                         <button
                                             type="button"
@@ -372,7 +372,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                                 setSelectedCustomer(null);
                                                 setCustomerSearchTerm("");
                                             }}
-                                            className="p-2 hover:bg-red-50 rounded-full text-red-500 transition-colors"
+                                            className="p-1 sm:p-2 hover:bg-red-50 rounded-full text-red-500 transition-colors"
                                         >
                                             <X className="w-5 h-5" />
                                         </button>
@@ -389,7 +389,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                             onKeyDown={handleKeyDown}
                                             onFocus={() => customerOptions.length > 0 && setIsDropdownOpen(true)}
                                             placeholder="Search customer by name..."
-                                            className="w-full border border-gray-300 px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
+                                            className="w-full border border-gray-300 placeholder:text-sm px-3 sm:px-4 py-2 rounded-lg outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-all"
                                         // className="w-full border-2 border-gray-200 pl-12 pr-4 py-3.5 rounded-xl outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition-all font-medium bg-white"
                                         />
 
@@ -416,7 +416,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
 
                         {/* Chrome-Style Tabs for Naam/Jama */}
                         <div className="bg-gray-50/50">
-                            <div className="flex p-4 pb-0">
+                            <div className="flex p-4 pt-3 sm:pt-4 pb-0">
                                 <button
                                     type="button"
                                     onClick={() => setTransactionType("N")}
@@ -462,12 +462,12 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                         </div>
 
                         {/* Tab Content - Input Fields */}
-                        <div className={`py-5 px-6 mx-4 rounded-tr-[12px] rounded-br-[12px] rounded-bl-[12px] ${transactionType === "N" ? "bg-red-500/80" : "bg-green-500/80 rounded-tl-[12px]"}`}>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className={` p-4 sm:py-5 sm:px-6 mx-4 rounded-tr-[12px] rounded-br-[12px] rounded-bl-[12px] ${transactionType === "N" ? "bg-red-500/80" : "bg-green-500/80 rounded-tl-[12px]"}`}>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
 
                                 {/* Silver Input */}
                                 <div>
-                                    <label className={`block text-sm text-white font-bold mb-1`}>
+                                    <label className={`block text-sm text-white font-semibold mb-1`}>
                                         <div className="flex items-center gap-2">
                                             Silver Weight (in grams)
                                         </div>
@@ -479,7 +479,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                             min={0}
                                             value={silverInGram}
                                             onChange={(e) => setSilverInGram(e.target.value)}
-                                            className={`w-full border placeholder:text-grey-400 border-gray-300 px-4 py-2.5 rounded-lg outline-none bg-white`}
+                                            className={`w-full border text-sm sm:text-lg placeholder:text-sm placeholder:text-grey-400 border-gray-300 px-3 sm:px-4 py-2.5 rounded-lg outline-none bg-white`}
                                         />
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 font-bold text-sm">g</span>
                                     </div>
@@ -487,7 +487,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
 
                                 {/* Cash Input */}
                                 <div>
-                                    <label className={`block text-sm text-white font-bold mb-1`}>
+                                    <label className={`block text-sm text-white font-semibold mb-1`}>
                                         <div className="flex items-center gap-2">
                                             Amount
                                         </div>
@@ -499,14 +499,14 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                             placeholder="e.g. 11,287.50"
                                             value={cash}
                                             onChange={(e) => setCash(e.target.value)}
-                                            className={`w-full placeholder:text-grey-400 border border-gray-300 px-4 py-2.5 rounded-lg outline-none bg-white`}
+                                            className={`w-full text-sm sm:text-lg placeholder:text-sm placeholder:text-grey-400 border border-gray-300 px-3 sm:px-4 py-2.5 rounded-lg outline-none bg-white`}
                                         />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Comment Section with Voice */}
-                            <div className="mt-3.5">
+                            <div className="mt-2.5 sm:mt-3.5">
                                 <label className="block text-sm font-semibold text-white mb-1">
                                     <div className="flex items-center justify-between">
                                         <span>Comments / Remarks</span>
@@ -518,7 +518,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                         placeholder="Enter additional details or use voice input..."
                                         value={comment}
                                         onChange={(e) => setComment(e.target.value)}
-                                        className={`w-full bg-white placeholder:text-grey-400 border border-white px-4 py-3 pr-14 rounded-xl outline-none transition-all resize-none`}
+                                        className={`w-full text-sm sm:text-lg placeholder:text-sm bg-white placeholder:text-grey-400 border border-white px-3 sm:px-4 py-3 pr-14 rounded-xl outline-none transition-all resize-none`}
                                     />
                                     <button
                                         type="button"
@@ -536,7 +536,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                             }`}
                                         title={isRecording ? "Recording... Click to stop" : "Voice input (Hindi & English)"}
                                     >
-                                        {isRecording ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+                                        {isRecording ? <Mic className="w-4 h-4 sm:w-5 sm:h-5" /> : <MicOff className="w-4 h-4 sm:w-5 sm:h-5" />}
                                     </button>
                                 </div>
                             </div>
@@ -544,10 +544,10 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
 
 
                         {/* Submit Section */}
-                        <div className="py-2.5 px-6 mt-2 border-t border-gray-200 bg-gray-100">
-                            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                        <div className="py-2.5 px-4 sm:px-6 mt-2 border-t border-gray-200 bg-gray-100">
+                            <div className="flex flex-row gap-4 items-center justify-between">
                                 <p className="text-sm text-gray-600">
-                                    All fields marked with <span className="text-red-500 font-bold">*</span> are required
+                                    Fields marked with <span className="text-red-500 font-bold">*</span> are required
                                 </p>
                                 {/* <button
                                         type="submit"
@@ -560,7 +560,7 @@ export default function AddHisabDiaryTransaction({ showAddTransaction, setShowAd
                                 <button
                                     type="submit"
                                     disabled={showLoader || !selectedCustomer || !(cash || silverInGram) }
-                                    className={`w-full sm:w-auto px-5 py-3 flex items-center justify-center gap-3 rounded-lg transition-all bg-[#6366F1] hover:bg-[#5d60e6] font-semibold text-white disabled:opacity-70`}
+                                    className={`w-auto px-5 py-2 sm:py-3 flex items-center justify-center gap-3 rounded-lg transition-all bg-[#6366F1] hover:bg-[#5d60e6] font-semibold text-white disabled:opacity-70`}
                                 >
                                     Submit
                                 </button>
